@@ -1,0 +1,16 @@
+@theme inline {
+  --color-demo: var(--demo);
+}
+
+/* global.css */
+@layer theme {
+  :root {
+    @variant light {
+      --demo: #0202ff;
+    }
+
+    @variant dark {
+      --demo: #909;
+    }
+  }
+}
