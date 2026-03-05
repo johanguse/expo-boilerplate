@@ -1,6 +1,5 @@
 import path from "path";
 import fs from "fs-extra";
-import chalk from "chalk";
 import ora, { type Ora } from "ora";
 import * as inquirer from "@inquirer/prompts";
 import fg from "fast-glob";
