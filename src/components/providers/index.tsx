@@ -7,6 +7,8 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import ThemeProviderComponent from "./ThemeProvider";
+import { OnboardingProvider } from "@contexts/onboarding-context";
+import { RevenueCatProvider } from "@contexts/revenuecat-context";
 
 type AppProviderProps = {
   children: React.ReactNode;
@@ -22,9 +24,13 @@ export default function AppProvider({ children }: Readonly<AppProviderProps>) {
   return (
     <GestureHandlerRootView>
       <KeyboardProvider>
-        <HeroUINativeProvider config={config}>
-          <ThemeProviderComponent>{children}</ThemeProviderComponent>
-        </HeroUINativeProvider>
+        <RevenueCatProvider>
+          <OnboardingProvider>
+            <HeroUINativeProvider config={config}>
+              <ThemeProviderComponent>{children}</ThemeProviderComponent>
+            </HeroUINativeProvider>
+          </OnboardingProvider>
+        </RevenueCatProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
   );

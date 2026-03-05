@@ -1,76 +1,112 @@
-# Welcome to Expo Boilerplate with Uniwind and HeroUI 🚀
+# Expo Boilerplate 🚀
 
-This is an [Expo](https://expo.dev) boilerplate project with **Uniwind** (Tailwind CSS v4) and **HeroUI Native** pre-configured for rapid React Native development.
+Full-stack React Native boilerplate with **FastAPI backend** integration, **HeroUI Native**, **Uniwind** (Tailwind CSS v4), onboarding flow, and in-app purchases.
 
-## 🎯 Features
+## ✨ Features
 
-- ✅ **Expo Router** - File-based routing
-- ✅ **Uniwind** - Tailwind CSS v4 for React Native
-- ✅ **HeroUI Native** - Beautiful UI component library
-- ✅ **TypeScript** - Type-safe development
-- ✅ **Authentication Flow** - Pre-built login/signup screens
-- ✅ **Tab Navigation** - Ready-to-use tab-based navigation
-- ✅ **Modern Styling** - Glassmorphism, gradients, and animations
-
-## 📦 Create a New Project
-
-Create a new project using this template:
-
-```bash
-# Using npx
-npx create-expo-app@latest --template https://github.com/sanketpipaliya208/expo_boilerplat_uniwind_heroui
-
-# Using yarn
-yarn create expo-app --template https://github.com/sanketpipaliya208/expo_boilerplat_uniwind_heroui
-
-# Using bun
-bun create expo --template https://github.com/sanketpipaliya208/expo_boilerplat_uniwind_heroui
-```
-
-## 🚀 Get Started
-
-1. **Install dependencies**
-
-   ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   bun install
-   ```
-
-2. **Start the development server**
-
-   ```bash
-   npx expo start
-   ```
-
-3. **Run on your device**
-
-   In the output, you'll find options to open the app in:
-   - [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
-   - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-   - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-   - [Expo Go](https://expo.dev/go) (limited sandbox)
+- **Expo Router** — File-based routing with `Stack.Protected` auth guards
+- **FastAPI Integration** — JWT auth (login, signup, forgot-password), auto-token management
+- **HeroUI Native** — Premium UI component library
+- **Uniwind** — Tailwind CSS v4 for React Native
+- **Onboarding Flow** — Multi-step onboarding with MMKV persistence
+- **RevenueCat** — Paywall & subscription management (optional)
+- **CLI Scaffolder** — Interactive tool to create new projects with feature selection
+- **TypeScript** — Strict mode, path aliases
+- **Zustand** — State management with real API integration
+- **Zod** — Form validation on auth screens
 
 ## 📁 Project Structure
 
 ```
-├── app/                    # Expo Router pages
-│   ├── (auth)/            # Authentication screens
-│   ├── (tabs)/            # Tab navigation screens
-│   └── _layout.tsx        # Root layout
 ├── src/
-│   ├── components/        # Reusable components
-│   ├── hooks/            # Custom React hooks
-│   ├── utils/            # Utility functions and services
-│   └── constants/        # App constants
-└── global.css            # Global Tailwind styles
+│   ├── app/                     # Expo Router pages
+│   │   ├── (auth)/              # Auth screens (login, signup, forgot-password)
+│   │   ├── (tabs)/              # Tab screens (home, explore, profile)
+│   │   └── onboarding/          # Onboarding flow (welcome, setup)
+│   ├── components/
+│   │   ├── common/              # Shared components (Icons, ActionButton)
+│   │   ├── form/                # Form components (FormInput, FormButton)
+│   │   ├── onboarding/          # Onboarding UI (StepHeader, OnboardingButton)
+│   │   └── providers/           # App-level providers
+│   ├── config/
+│   │   ├── api.ts               # API base URL configuration
+│   │   └── revenuecat.ts        # RevenueCat API keys
+│   ├── contexts/
+│   │   ├── onboarding-context.tsx  # Onboarding state (MMKV)
+│   │   └── revenuecat-context.tsx  # RevenueCat purchases
+│   ├── screens/
+│   │   ├── auth/                # Login, Signup, ForgotPassword screens
+│   │   └── tabs/                # Home, Explore, Profile screens
+│   ├── services/
+│   │   ├── api/
+│   │   │   ├── client.ts        # HTTP client with JWT auto-injection
+│   │   │   └── auth.ts          # Auth API calls (login, register, etc.)
+│   │   └── zustand/
+│   │       └── auth.zustand.ts  # Auth state + session persistence
+│   └── utils/
+│       └── storage.ts           # MMKV storage wrapper
+├── cli/                         # CLI scaffolder (see below)
+├── docs/                        # Documentation
+├── app.json                     # Expo config (apiBaseUrl in extra)
+└── jest.config.js               # Test configuration
 ```
+
+## 🚀 Quick Start
+
+### Using the CLI (Recommended)
+
+```bash
+cd cli && npm install && npm run build
+node dist/index.js my-app
+```
+
+The CLI will guide you through project name, bundle ID, package manager, and feature selection.
+
+### Manual Setup
+
+1. **Clone & install**
+
+   ```bash
+   git clone <repo-url> my-app
+   cd my-app
+   yarn install
+   ```
+
+2. **Configure the API**
+
+   Update `app.json` → `expo.extra.apiBaseUrl` with your FastAPI backend URL:
+
+   ```json
+   "extra": {
+     "apiBaseUrl": "http://localhost:8000"
+   }
+   ```
+
+3. **Build & run**
+
+   ```bash
+   npx expo prebuild --clean
+   npx expo run:ios
+   ```
+
+## 🔐 Authentication
+
+The app connects to a **FastAPI** backend using `fastapi-users` JWT authentication:
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/auth/jwt/login` | POST | Login (form-urlencoded: `username`, `password`) |
+| `/api/v1/auth/register` | POST | Register (JSON: `email`, `password`, `name`) |
+| `/api/v1/auth/forgot-password` | POST | Request password reset |
+| `/api/v1/users/me` | GET | Get current user profile |
+
+- JWT tokens are persisted to MMKV storage
+- Session is automatically restored on app start
+- 401 responses trigger automatic logout
 
 ## 🎨 Styling
 
-This boilerplate uses **Uniwind** for styling with Tailwind CSS v4. Style your components using Tailwind classes:
+Uses **Uniwind** (Tailwind CSS v4) for styling:
 
 ```tsx
 <View className="flex-1 bg-gradient-to-br from-purple-500 to-pink-500">
@@ -78,29 +114,57 @@ This boilerplate uses **Uniwind** for styling with Tailwind CSS v4. Style your c
 </View>
 ```
 
-## 🧩 UI Components
+## 🧪 Testing
 
-HeroUI Native components are available throughout the project:
+```bash
+# Run all tests
+yarn test
 
-```tsx
-import { Button, Input, Card } from "@heroui/native";
-
-<Button color="primary" onPress={() => {}}>
-  Click Me
-</Button>;
+# Run with coverage
+yarn test --coverage
 ```
+
+**Test suites:**
+- `src/services/api/__tests__/client.test.ts` — API client (JWT, errors, methods)
+- `src/services/api/__tests__/auth.test.ts` — Auth API (login, register, forgot-password)
+- `cli/src/__tests__/tokens.test.ts` — CLI token generation
+- `cli/src/__tests__/feature-toggles.test.ts` — CLI feature configurations
+
+## 🛠️ CLI Scaffolder
+
+Interactive CLI to create new projects from this boilerplate:
+
+```bash
+cd cli
+npm install && npm run build
+node dist/index.js [project-name] [--default] [--yes]
+```
+
+**Prompts:**
+- **Project name** — Your app's folder and display name
+- **Bundle identifier** — e.g., `com.company.myapp`
+- **Package manager** — npm, pnpm, yarn, or bun
+- **Features** — Choose integrations:
+  - API Backend (FastAPI auth + API client)
+  - Onboarding Flow (multi-step with persistence)
+  - RevenueCat (in-app purchases & paywall)
+
+## ⚙️ Configuration
+
+| Config | Location | Purpose |
+|--------|----------|---------|
+| API URL | `app.json > expo.extra.apiBaseUrl` | Backend server address |
+| RevenueCat | `src/config/revenuecat.ts` | iOS/Android API keys |
+| Path aliases | `tsconfig.json > paths` | `@components`, `@services`, `@config`, etc. |
 
 ## 📚 Learn More
 
 - [Expo Documentation](https://docs.expo.dev/)
 - [Expo Router](https://docs.expo.dev/router/introduction/)
-- [Uniwind Documentation](https://www.npmjs.com/package/uniwind)
 - [HeroUI Native](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests.
+- [Uniwind](https://www.npmjs.com/package/uniwind)
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [RevenueCat](https://www.revenuecat.com/docs/)
 
 ## 📄 License
 

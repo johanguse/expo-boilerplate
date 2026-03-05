@@ -3,13 +3,13 @@ import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
 import useAppForm from "@hooks/form.hook";
 import useAuthManage from "@services/zustand/auth.zustand";
-import { sleep } from "@utils/helper";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
 import React, { useState } from "react";
 import { ScrollView } from "react-native";
 import { email, object, string } from "zod";
+import { useRouter } from "expo-router";
 
 const validationSchema = object({
   email: email("Invalid email address").nonempty("Field is required"),
@@ -19,6 +19,7 @@ const validationSchema = object({
 export default function SignInPage() {
   const signIn = useAuthManage((state) => state.signIn);
   const { toast } = useToast();
+  const router = useRouter();
 
   const [showPass, setShowPass] = useState<boolean>(false);
 
@@ -31,13 +32,21 @@ export default function SignInPage() {
       onChange: validationSchema,
     },
     onSubmit: async ({ value }) => {
-      await sleep(2000);
-      toast.show({
-        label: "Success",
-        variant: "success",
-        description: "Login successful",
-      });
-      signIn();
+      try {
+        await signIn(value.email, value.password);
+        toast.show({
+          label: "Success",
+          variant: "success",
+          description: "Login successful",
+        });
+      } catch (error: any) {
+        toast.show({
+          label: "Login Failed",
+          variant: "danger",
+          description:
+            error?.detail ?? error?.message ?? "Invalid email or password",
+        });
+      }
     },
   });
 
@@ -89,7 +98,10 @@ export default function SignInPage() {
         )}
       </Form.AppField>
 
-      <Button variant="ghost" className="self-end -mx-3">
+      <Button
+        variant="ghost"
+        className="self-end -mx-3"
+        onPress={() => router.push("/(auth)/forgot-password")}>
         <Button.Label>Forgot Password?</Button.Label>
       </Button>
 
@@ -99,7 +111,10 @@ export default function SignInPage() {
         </FormButton>
       </Form.AppForm>
 
-      <Button variant="ghost" className="self-center">
+      <Button
+        variant="ghost"
+        className="self-center"
+        onPress={() => router.push("/(auth)/signup")}>
         <Button.Label>Don't have an account? Sign Up</Button.Label>
       </Button>
     </ScrollView>

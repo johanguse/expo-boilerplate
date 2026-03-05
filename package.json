@@ -4,10 +4,11 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "test": "jest --passWithNoTests",
     "pb": "expo prebuild",
     "pb:c": "expo prebuild --clean",
     "pb:i": "expo prebuild --clean --platform ios",
@@ -22,6 +23,7 @@
     "@tanstack/react-form": "^1.28.3",
     "expo": "~55.0.3",
     "expo-constants": "~55.0.7",
+    "expo-dev-client": "~55.0.11",
     "expo-font": "~55.0.4",
     "expo-haptics": "~55.0.8",
     "expo-image": "~55.0.5",
@@ -38,6 +40,10 @@
     "react-native": "0.83.2",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-keyboard-controller": "1.20.7",
+    "react-native-mmkv": "^4.2.0",
+    "react-native-nitro-modules": "^0.35.0",
+    "react-native-purchases": "^9.11.0",
+    "react-native-purchases-ui": "^9.11.0",
     "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.23.0",
@@ -52,10 +58,14 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.2.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~55.0.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
