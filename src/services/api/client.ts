@@ -11,7 +11,7 @@ interface RequestOptions {
   formData?: URLSearchParams;
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
   detail: string;
 
@@ -23,6 +23,18 @@ class ApiError extends Error {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Unauthorized callback — set by the auth store to avoid circular imports
+// ---------------------------------------------------------------------------
+let _onUnauthorized: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: () => void): void {
+  _onUnauthorized = handler;
+}
+
+// ---------------------------------------------------------------------------
+// Core fetch wrapper
+// ---------------------------------------------------------------------------
 async function request<T>(
   method: HttpMethod,
   path: string,
@@ -35,7 +47,6 @@ async function request<T>(
     ...(options?.headers ?? {}),
   };
 
-  // Add auth token unless explicitly skipped
   if (!options?.noAuth) {
     const token = storage.getString(StorageKeys.ACCESS_TOKEN);
     if (token) {
@@ -59,12 +70,18 @@ async function request<T>(
     body: fetchBody,
   });
 
-  // Handle 204 No Content
+  // 204 No Content
   if (response.status === 204) {
     return undefined as T;
   }
 
-  let data: any;
+  // 401 Unauthorized → trigger sign-out
+  if (response.status === 401 && !options?.noAuth) {
+    _onUnauthorized?.();
+    throw new ApiError(401, "Session expired. Please sign in again.");
+  }
+
+  let data: unknown;
   try {
     data = await response.json();
   } catch {
@@ -73,7 +90,7 @@ async function request<T>(
 
   if (!response.ok) {
     const detail =
-      data?.detail ??
+      (data as any)?.detail ??
       (typeof data === "string" ? data : `Request failed (${response.status})`);
     throw new ApiError(response.status, detail);
   }
@@ -97,5 +114,3 @@ export const apiClient = {
   delete: <T>(path: string, options?: RequestOptions) =>
     request<T>("DELETE", path, undefined, options),
 };
-
-export { ApiError };

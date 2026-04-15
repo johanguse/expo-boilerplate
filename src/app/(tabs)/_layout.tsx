@@ -4,7 +4,11 @@ import React from "react";
 
 export default function TabLayout() {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -15,11 +19,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="chat"
         options={{
-          title: "Explore",
+          title: "Chat",
           tabBarIcon: ({ color, size }) => (
-            <SIonicons name="compass-outline" size={size} color={color} />
+            <SIonicons name="chatbubble-outline" size={size} color={color} />
           ),
         }}
       />
@@ -31,6 +35,20 @@ export default function TabLayout() {
             <SIonicons name="person-outline" size={size} color={color} />
           ),
         }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color, size }) => (
+            <SIonicons name="settings-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      {/* Hide the old explore tab from the tab bar */}
+      <Tabs.Screen
+        name="explore"
+        options={{ href: null }}
       />
     </Tabs>
   );

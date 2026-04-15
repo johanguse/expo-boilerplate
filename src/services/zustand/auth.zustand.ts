@@ -6,6 +6,7 @@ import {
   type AuthToken,
   type UserProfile,
 } from "@services/api/auth";
+import { setUnauthorizedHandler } from "@services/api/client";
 import { storage, StorageKeys } from "@utils/storage";
 
 type AuthState = {
@@ -26,6 +27,8 @@ type AuthState = {
   signUp: (email: string, password: string, name?: string) => Promise<void>;
   /** Clear session */
   signOut: () => void;
+  /** Update the cached user object (after profile edits) */
+  setUser: (user: UserProfile) => void;
 };
 
 const useAuthManage = create<AuthState>((set, get) => ({
@@ -35,6 +38,9 @@ const useAuthManage = create<AuthState>((set, get) => ({
   token: null,
 
   initialize: async () => {
+    // Wire the 401 handler so the API client can sign out without a circular import
+    setUnauthorizedHandler(() => get().signOut());
+
     try {
       const storedToken = storage.getString(StorageKeys.ACCESS_TOKEN);
       if (!storedToken) {
@@ -42,12 +48,10 @@ const useAuthManage = create<AuthState>((set, get) => ({
         return;
       }
 
-      // Token exists – try to fetch user profile to verify it's still valid
       set({ token: storedToken });
       const user = await getCurrentUser();
       set({ isLogin: true, user, token: storedToken, isLoading: false });
     } catch {
-      // Token expired or invalid - clear everything
       storage.remove(StorageKeys.ACCESS_TOKEN);
       set({ isLogin: false, user: null, token: null, isLoading: false });
     }
@@ -64,7 +68,6 @@ const useAuthManage = create<AuthState>((set, get) => ({
 
   signUp: async (email, password, name) => {
     await registerAPI({ email, password, name });
-    // Auto-login after registration
     await get().signIn(email, password);
   },
 
@@ -72,6 +75,8 @@ const useAuthManage = create<AuthState>((set, get) => ({
     storage.remove(StorageKeys.ACCESS_TOKEN);
     set({ isLogin: false, user: null, token: null });
   },
+
+  setUser: (user) => set({ user }),
 }));
 
 export default useAuthManage;

@@ -7,82 +7,108 @@ import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
 import React from "react";
-import { ScrollView, View } from "react-native";
-import { Text } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { email, object } from "zod";
 import { useRouter } from "expo-router";
 
 const validationSchema = object({
-  email: email("Invalid email address").nonempty("Field is required"),
+  email: email("Invalid email address").nonempty("Email is required"),
 });
 
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const Form = useAppForm({
-    defaultValues: {
-      email: "",
-    },
-    validators: {
-      onChange: validationSchema,
-    },
+    defaultValues: { email: "" },
+    validators: { onChange: validationSchema },
     onSubmit: async ({ value }) => {
       try {
         await forgotPasswordAPI(value.email);
-        toast.show({
-          label: "Email Sent",
-          variant: "success",
-          description: "Check your email for password reset instructions",
-        });
-        router.back();
-      } catch (error: any) {
-        // fastapi-users returns 202 even if email doesn't exist (by design)
-        toast.show({
-          label: "Email Sent",
-          variant: "success",
-          description: "If an account exists, you'll receive reset instructions",
-        });
-        router.back();
-      }
+      } catch {}
+      // Always show success to prevent email enumeration
+      toast.show({
+        label: "Email sent",
+        variant: "success",
+        description: "If that account exists, you'll receive reset instructions.",
+      });
+      router.back();
     },
   });
 
   return (
-    <ScrollView contentContainerClassName="grow p-4 gap-y-3">
-      <Text className="text-default-foreground text-base mb-2">
-        Enter your email address and we'll send you instructions to reset your
-        password.
-      </Text>
+    <KeyboardAvoidingView
+      className="flex-1 bg-background"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerClassName="grow"
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Back button */}
+        <View style={{ paddingTop: insets.top + 12 }} className="px-4">
+          <Button isIconOnly variant="ghost" size="sm" onPress={() => router.back()}>
+            <SIonicons size={22} name="arrow-back" className="text-default-foreground" />
+          </Button>
+        </View>
 
-      <Form.AppField name="email">
-        {() => (
-          <FormInput
-            label="Email"
-            autoCapitalize="none"
-            keyboardType="email-address">
-            <InputGroup.Prefix isDecorative>
-              <SIonicons
-                size={20}
-                name="mail-outline"
-                className="text-default-foreground"
-              />
-            </InputGroup.Prefix>
-          </FormInput>
-        )}
-      </Form.AppField>
+        {/* Header */}
+        <View className="px-6 pb-8 pt-6">
+          <View className="size-14 bg-primary/10 rounded-2xl items-center justify-center mb-5">
+            <SIonicons size={28} name="key-outline" className="text-primary" />
+          </View>
+          <Text className="text-2xl font-bold text-default-foreground mb-2">
+            Reset password
+          </Text>
+          <Text className="text-default-400 text-sm leading-relaxed">
+            Enter your email and we'll send you instructions to reset your password.
+          </Text>
+        </View>
 
-      <View className="h-2" />
+        {/* Form */}
+        <View className="px-6 gap-y-4">
+          <Form.AppField name="email">
+            {() => (
+              <FormInput
+                label="Email"
+                autoCapitalize="none"
+                keyboardType="email-address"
+              >
+                <InputGroup.Prefix isDecorative>
+                  <SIonicons
+                    size={18}
+                    name="mail-outline"
+                    className="text-default-400"
+                  />
+                </InputGroup.Prefix>
+              </FormInput>
+            )}
+          </Form.AppField>
 
-      <Form.AppForm>
-        <FormButton>
-          <Button.Label>Send Reset Link</Button.Label>
-        </FormButton>
-      </Form.AppForm>
+          <Form.AppForm>
+            <FormButton>
+              <Button.Label>Send Reset Link</Button.Label>
+            </FormButton>
+          </Form.AppForm>
+        </View>
 
-      <Button variant="ghost" className="self-center" onPress={() => router.back()}>
-        <Button.Label>Back to Sign In</Button.Label>
-      </Button>
-    </ScrollView>
+        <View className="flex-row justify-center items-center mt-6 gap-x-1">
+          <Text className="text-default-500 text-sm">Remembered it?</Text>
+          <Button variant="ghost" size="sm" onPress={() => router.back()}>
+            <Button.Label className="text-primary font-semibold text-sm">
+              Back to sign in
+            </Button.Label>
+          </Button>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

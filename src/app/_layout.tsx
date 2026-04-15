@@ -60,6 +60,7 @@ function AppLayout() {
         </Stack.Protected>
         <Stack.Protected guard={isLogin}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="profile" options={{ headerShown: false }} />
         </Stack.Protected>
       </Stack>
     </>

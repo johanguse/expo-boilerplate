@@ -6,6 +6,8 @@ export const StorageKeys = {
   ACCESS_TOKEN: "access_token",
   USER_PROFILE: "user_profile",
   ONBOARDING_DONE: "onboarding_done",
+  THEME_PREFERENCE: "theme_preference",
+  CHAT_HISTORY: "chat_history",
 } as const;
 
 export const storage = {
