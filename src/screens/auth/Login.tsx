@@ -1,11 +1,14 @@
 import { SIonicons } from "@components/common/Icons";
+import LanguageSwitcher from "@components/common/LanguageSwitcher";
 import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
 import useAppForm from "@hooks/form.hook";
+import { useTranslation } from "@i18n";
 import useAuthManage from "@services/zustand/auth.zustand";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -16,7 +19,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { email, object, string } from "zod";
-import { useRouter } from "expo-router";
 
 const validationSchema = object({
   email: email("Invalid email address").nonempty("Email is required"),
@@ -29,6 +31,7 @@ export default function SignInPage() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [showPass, setShowPass] = useState(false);
+  const { t } = useTranslation();
 
   const Form = useAppForm({
     defaultValues: { email: "", password: "" },
@@ -38,10 +41,9 @@ export default function SignInPage() {
         await signIn(value.email, value.password);
       } catch (error: any) {
         toast.show({
-          label: "Sign in failed",
+          label: t("auth.login.errorTitle"),
           variant: "danger",
-          description:
-            error?.detail ?? error?.message ?? "Invalid email or password",
+          description: error?.detail ?? error?.message ?? t("auth.login.errorTitle"),
         });
       }
     },
@@ -65,10 +67,10 @@ export default function SignInPage() {
             <SIonicons size={32} name="rocket" className="text-primary-foreground" />
           </View>
           <Text className="text-2xl font-bold text-default-foreground">
-            Welcome back
+            {t("auth.login.title")}
           </Text>
           <Text className="text-default-400 text-sm mt-1">
-            Sign in to your account
+            {t("auth.login.subtitle")}
           </Text>
         </View>
 
@@ -77,16 +79,12 @@ export default function SignInPage() {
           <Form.AppField name="email">
             {() => (
               <FormInput
-                label="Email"
+                label={t("common.email")}
                 autoCapitalize="none"
                 keyboardType="email-address"
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons
-                    size={18}
-                    name="mail-outline"
-                    className="text-default-400"
-                  />
+                  <SIonicons size={18} name="mail-outline" className="text-default-400" />
                 </InputGroup.Prefix>
               </FormInput>
             )}
@@ -95,29 +93,16 @@ export default function SignInPage() {
           <Form.AppField name="password">
             {() => (
               <FormInput
-                label="Password"
+                label={t("common.password")}
                 autoCapitalize="none"
                 secureTextEntry={!showPass}
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons
-                    size={18}
-                    name="lock-closed-outline"
-                    className="text-default-400"
-                  />
+                  <SIonicons size={18} name="lock-closed-outline" className="text-default-400" />
                 </InputGroup.Prefix>
                 <InputGroup.Suffix>
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="ghost"
-                    onPress={() => setShowPass(!showPass)}
-                  >
-                    <SIonicons
-                      size={18}
-                      name={showPass ? "eye" : "eye-off"}
-                      className="text-default-400"
-                    />
+                  <Button isIconOnly size="sm" variant="ghost" onPress={() => setShowPass(!showPass)}>
+                    <SIonicons size={18} name={showPass ? "eye" : "eye-off"} className="text-default-400" />
                   </Button>
                 </InputGroup.Suffix>
               </FormInput>
@@ -130,29 +115,28 @@ export default function SignInPage() {
             onPress={() => router.push("/(auth)/forgot-password")}
           >
             <Button.Label className="text-primary text-sm">
-              Forgot password?
+              {t("auth.login.forgotPassword")}
             </Button.Label>
           </Button>
 
           <Form.AppForm>
             <FormButton>
-              <Button.Label>Sign In</Button.Label>
+              <Button.Label>{t("auth.login.submit")}</Button.Label>
             </FormButton>
           </Form.AppForm>
         </View>
 
+        {/* Language switcher */}
+        <View className="items-center mt-4">
+          <LanguageSwitcher />
+        </View>
+
         {/* Footer */}
-        <View className="flex-row justify-center items-center mt-6 pb-8 gap-x-1">
-          <Text className="text-default-500 text-sm">
-            Don't have an account?
-          </Text>
-          <Button
-            variant="ghost"
-            size="sm"
-            onPress={() => router.push("/(auth)/signup")}
-          >
+        <View className="flex-row justify-center items-center mt-4 pb-8 gap-x-1">
+          <Text className="text-default-500 text-sm">{t("auth.login.noAccount")}</Text>
+          <Button variant="ghost" size="sm" onPress={() => router.push("/(auth)/signup")}>
             <Button.Label className="text-primary font-semibold text-sm">
-              Sign up
+              {t("auth.login.signUp")}
             </Button.Label>
           </Button>
         </View>

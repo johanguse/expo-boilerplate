@@ -2,6 +2,7 @@ import { SIonicons } from "@components/common/Icons";
 import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
 import useAppForm from "@hooks/form.hook";
+import { useTranslation } from "@i18n";
 import useAuthManage from "@services/zustand/auth.zustand";
 import useProfileStore from "@services/zustand/profile.zustand";
 import { Button } from "heroui-native/button";
@@ -30,6 +31,7 @@ export default function EditProfileScreen() {
   const { toast } = useToast();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const Form = useAppForm({
     defaultValues: {
@@ -42,9 +44,7 @@ export default function EditProfileScreen() {
       country: user?.country ?? "",
       timezone: user?.timezone ?? "",
     },
-    validators: {
-      onChange: validationSchema,
-    },
+    validators: { onChange: validationSchema },
     onSubmit: async ({ value }) => {
       try {
         await updateProfile({
@@ -58,16 +58,16 @@ export default function EditProfileScreen() {
           timezone: value.timezone || undefined,
         });
         toast.show({
-          label: "Saved",
+          label: t("editProfile.successTitle"),
           variant: "success",
-          description: "Profile updated successfully",
+          description: t("editProfile.successMessage"),
         });
         router.back();
       } catch (err: any) {
         toast.show({
-          label: "Error",
+          label: t("editProfile.errorTitle"),
           variant: "danger",
-          description: err?.detail ?? err?.message ?? "Failed to update profile",
+          description: err?.detail ?? err?.message ?? t("editProfile.errorMessage"),
         });
       }
     },
@@ -87,7 +87,7 @@ export default function EditProfileScreen() {
           <SIonicons size={20} name="arrow-back" className="text-default-foreground" />
         </Button>
         <Text className="text-lg font-semibold text-default-foreground flex-1">
-          Edit Profile
+          {t("editProfile.title")}
         </Text>
       </View>
 
@@ -96,12 +96,12 @@ export default function EditProfileScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mt-2 mb-1">
-          Basic
+          {t("editProfile.basic")}
         </Text>
 
         <Form.AppField name="name">
           {() => (
-            <FormInput label="Full Name" autoCapitalize="words">
+            <FormInput label={t("editProfile.fullName")} autoCapitalize="words">
               <InputGroup.Prefix isDecorative>
                 <SIonicons size={18} name="person-outline" className="text-default-400" />
               </InputGroup.Prefix>
@@ -110,65 +110,42 @@ export default function EditProfileScreen() {
         </Form.AppField>
 
         <Form.AppField name="bio">
-          {() => (
-            <FormInput
-              label="Bio"
-              autoCapitalize="sentences"
-            />
-          )}
+          {() => <FormInput label={t("editProfile.bio")} autoCapitalize="sentences" />}
         </Form.AppField>
 
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mt-4 mb-1">
-          Work
+          {t("editProfile.work")}
         </Text>
 
         <Form.AppField name="company">
-          {() => (
-            <FormInput label="Company" autoCapitalize="words" />
-          )}
+          {() => <FormInput label={t("editProfile.company")} autoCapitalize="words" />}
         </Form.AppField>
 
         <Form.AppField name="job_title">
-          {() => (
-            <FormInput label="Job Title" autoCapitalize="words" />
-          )}
+          {() => <FormInput label={t("editProfile.jobTitle")} autoCapitalize="words" />}
         </Form.AppField>
 
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mt-4 mb-1">
-          Contact
+          {t("editProfile.contact")}
         </Text>
 
         <Form.AppField name="phone">
-          {() => (
-            <FormInput
-              label="Phone"
-              keyboardType="phone-pad"
-              autoCapitalize="none"
-            />
-          )}
+          {() => <FormInput label={t("editProfile.phone")} keyboardType="phone-pad" autoCapitalize="none" />}
         </Form.AppField>
 
         <Form.AppField name="website">
-          {() => (
-            <FormInput
-              label="Website"
-              keyboardType="url"
-              autoCapitalize="none"
-            />
-          )}
+          {() => <FormInput label={t("editProfile.website")} keyboardType="url" autoCapitalize="none" />}
         </Form.AppField>
 
         <Form.AppField name="country">
-          {() => (
-            <FormInput label="Country" autoCapitalize="words" />
-          )}
+          {() => <FormInput label={t("editProfile.country")} autoCapitalize="words" />}
         </Form.AppField>
 
         <Form.AppField name="timezone">
           {() => (
             <FormInput
-              label="Timezone"
-              placeholder="e.g. America/New_York"
+              label={t("editProfile.timezone")}
+              placeholder={t("editProfile.timezonePlaceholder")}
               autoCapitalize="none"
             />
           )}
@@ -177,7 +154,7 @@ export default function EditProfileScreen() {
         <View className="mt-4">
           <Form.AppForm>
             <FormButton>
-              <Button.Label>Save Changes</Button.Label>
+              <Button.Label>{t("editProfile.submit")}</Button.Label>
             </FormButton>
           </Form.AppForm>
         </View>

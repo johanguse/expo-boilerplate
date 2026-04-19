@@ -1,9 +1,10 @@
 import { Stack, usePathname, useRouter } from "expo-router";
 import { View } from "react-native";
 import { useOnboarding } from "@contexts/onboarding-context";
-import { useRevenueCat } from "@contexts/revenuecat-context";
 import { OnboardingButton } from "@components/onboarding/OnboardingButton";
 import { StepHeader } from "@components/onboarding/StepHeader";
+import { useTranslation } from "@i18n";
+import useAuthManage from "@services/zustand/auth.zustand";
 
 const TOTAL_STEPS = 2;
 
@@ -11,24 +12,17 @@ export default function OnboardingLayout() {
   const pathname = usePathname();
   const router = useRouter();
   const { setOnboardingDone } = useOnboarding();
-  const { presentPaywall, isProUser } = useRevenueCat();
+  const { t } = useTranslation();
+  const isLogin = useAuthManage((s) => s.isLogin);
 
   const isSetup = pathname.includes("setup");
   const currentStep = isSetup ? 2 : 1;
 
-  const handlePress = async () => {
+  const handlePress = () => {
     if (isSetup) {
       setOnboardingDone(true);
-
-      if (!isProUser) {
-        try {
-          await presentPaywall();
-        } catch (err) {
-          console.error("Paywall failed:", err);
-        }
-      }
-
-      router.replace("/(auth)/login");
+      // If already logged in (e.g. session restored), skip login screen entirely
+      router.replace(isLogin ? "/(tabs)" : "/(auth)/login");
     } else {
       router.push("/onboarding/setup");
     }
@@ -49,7 +43,7 @@ export default function OnboardingLayout() {
       </View>
 
       <OnboardingButton
-        label={isSetup ? "Get Started!" : "Next"}
+        label={isSetup ? t("onboarding.getStarted") : t("onboarding.next")}
         onPress={handlePress}
       />
     </View>

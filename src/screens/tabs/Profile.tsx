@@ -1,11 +1,12 @@
 import { SIonicons } from "@components/common/Icons";
+import { useTranslation } from "@i18n";
 import useAuthManage from "@services/zustand/auth.zustand";
 import { Card } from "heroui-native/card";
 import { useRouter } from "expo-router";
+import { Image } from "expo-image";
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image } from "expo-image";
 
 function InfoRow({ icon, value }: { icon: string; value: string }) {
   return (
@@ -20,14 +21,10 @@ export default function ProfileScreen() {
   const user = useAuthManage((s) => s.user);
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : user?.email?.slice(0, 2).toUpperCase() ?? "?";
 
   const hasExtraInfo =
@@ -43,13 +40,13 @@ export default function ProfileScreen() {
         className="px-4 pb-4 flex-row items-center justify-between"
         style={{ paddingTop: insets.top + 16 }}
       >
-        <Text className="text-2xl font-bold text-default-foreground">Profile</Text>
+        <Text className="text-2xl font-bold text-default-foreground">{t("profile.title")}</Text>
         <Pressable
           onPress={() => router.push("/profile/edit" as any)}
           className="flex-row items-center gap-x-1.5 bg-default-100 rounded-full px-3 py-1.5 active:bg-default-200"
         >
           <SIonicons size={14} name="pencil-outline" className="text-default-600" />
-          <Text className="text-default-600 text-sm font-medium">Edit</Text>
+          <Text className="text-default-600 text-sm font-medium">{t("profile.edit")}</Text>
         </Pressable>
       </View>
 
@@ -70,7 +67,6 @@ export default function ProfileScreen() {
               <Text className="text-primary text-3xl font-bold">{initials}</Text>
             </View>
           )}
-          {/* Verified badge */}
           {user?.is_verified && (
             <View className="absolute bottom-0 right-0 size-6 bg-success rounded-full border-2 border-background items-center justify-center">
               <SIonicons size={12} name="checkmark" className="text-white" />
@@ -79,7 +75,7 @@ export default function ProfileScreen() {
         </View>
 
         <Text className="text-xl font-bold text-default-foreground">
-          {user?.name ?? "No name set"}
+          {user?.name ?? t("profile.noName")}
         </Text>
         <Text className="text-default-400 text-sm mt-0.5">{user?.email}</Text>
 
@@ -90,12 +86,12 @@ export default function ProfileScreen() {
         )}
       </View>
 
-      {/* Account info */}
+      {/* Cards */}
       <View className="px-4 gap-y-3">
         {user?.bio && (
           <Card className="p-4">
             <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mb-2">
-              About
+              {t("profile.about")}
             </Text>
             <Text className="text-default-foreground text-sm leading-relaxed">{user.bio}</Text>
           </Card>
@@ -104,7 +100,7 @@ export default function ProfileScreen() {
         {hasExtraInfo && (
           <Card className="p-4">
             <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mb-2">
-              Details
+              {t("profile.details")}
             </Text>
             {user?.company && <InfoRow icon="business-outline" value={user.company} />}
             {user?.job_title && <InfoRow icon="briefcase-outline" value={user.job_title} />}
@@ -116,7 +112,7 @@ export default function ProfileScreen() {
 
         <Card className="p-4">
           <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mb-2">
-            Account
+            {t("profile.account")}
           </Text>
           <View className="flex-row items-center gap-x-3 py-2">
             <SIonicons
@@ -125,18 +121,18 @@ export default function ProfileScreen() {
               className={user?.is_verified ? "text-success" : "text-warning"}
             />
             <Text className="text-default-foreground text-sm flex-1">
-              {user?.is_verified ? "Email verified" : "Email not verified"}
+              {user?.is_verified ? t("profile.emailVerified") : t("profile.emailNotVerified")}
             </Text>
             <View className={`px-2 py-0.5 rounded-full ${user?.is_verified ? "bg-success/10" : "bg-warning/10"}`}>
               <Text className={`text-xs font-medium ${user?.is_verified ? "text-success" : "text-warning"}`}>
-                {user?.is_verified ? "Verified" : "Pending"}
+                {user?.is_verified ? t("profile.verified") : t("profile.pending")}
               </Text>
             </View>
           </View>
           <View className="flex-row items-center gap-x-3 py-2">
             <SIonicons size={16} name="calendar-outline" className="text-default-400" />
             <Text className="text-default-foreground text-sm">
-              Joined{" "}
+              {t("profile.joined")}{" "}
               {user?.created_at
                 ? new Date(user.created_at).toLocaleDateString("en-US", {
                     year: "numeric",

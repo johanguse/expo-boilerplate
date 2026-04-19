@@ -1,4 +1,6 @@
 import { SIonicons } from "@components/common/Icons";
+import { useTranslation } from "@i18n";
+import { useRevenueCat } from "@contexts/revenuecat-context";
 import useAuthManage from "@services/zustand/auth.zustand";
 import { Card } from "heroui-native/card";
 import { useRouter } from "expo-router";
@@ -39,57 +41,59 @@ function FeatureCard({
   );
 }
 
-const STACK_FEATURES = [
-  {
-    icon: "layers-outline",
-    title: "Expo Router",
-    description: "File-based routing with type-safe navigation",
-    accent: "bg-blue-500/10",
-    iconColor: "text-blue-500",
-  },
-  {
-    icon: "sparkles-outline",
-    title: "HeroUI Native",
-    description: "Accessible, beautiful UI component library",
-    accent: "bg-purple-500/10",
-    iconColor: "text-purple-500",
-  },
-  {
-    icon: "flash-outline",
-    title: "Zustand",
-    description: "Lightweight, fast state management",
-    accent: "bg-yellow-500/10",
-    iconColor: "text-yellow-500",
-  },
-  {
-    icon: "shield-checkmark-outline",
-    title: "FastAPI Auth",
-    description: "JWT authentication with your backend",
-    accent: "bg-green-500/10",
-    iconColor: "text-green-500",
-  },
-  {
-    icon: "card-outline",
-    title: "RevenueCat",
-    description: "In-app purchases and subscriptions",
-    accent: "bg-orange-500/10",
-    iconColor: "text-orange-500",
-  },
-  {
-    icon: "chatbubble-ellipses-outline",
-    title: "AI Chat",
-    description: "Streaming AI responses via OpenRouter",
-    accent: "bg-pink-500/10",
-    iconColor: "text-pink-500",
-  },
-];
-
 export default function HomeScreen() {
   const user = useAuthManage((s) => s.user);
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+  const { presentPaywall, isProUser } = useRevenueCat();
 
   const firstName = user?.name?.split(" ")[0] ?? "there";
+
+  const STACK_FEATURES = [
+    {
+      icon: "layers-outline",
+      title: t("home.features.router.title"),
+      description: t("home.features.router.description"),
+      accent: "bg-blue-500/10",
+      iconColor: "text-blue-500",
+    },
+    {
+      icon: "sparkles-outline",
+      title: t("home.features.heroui.title"),
+      description: t("home.features.heroui.description"),
+      accent: "bg-purple-500/10",
+      iconColor: "text-purple-500",
+    },
+    {
+      icon: "flash-outline",
+      title: t("home.features.zustand.title"),
+      description: t("home.features.zustand.description"),
+      accent: "bg-yellow-500/10",
+      iconColor: "text-yellow-500",
+    },
+    {
+      icon: "shield-checkmark-outline",
+      title: t("home.features.auth.title"),
+      description: t("home.features.auth.description"),
+      accent: "bg-green-500/10",
+      iconColor: "text-green-500",
+    },
+    {
+      icon: "card-outline",
+      title: t("home.features.revenuecat.title"),
+      description: t("home.features.revenuecat.description"),
+      accent: "bg-orange-500/10",
+      iconColor: "text-orange-500",
+    },
+    {
+      icon: "chatbubble-ellipses-outline",
+      title: t("home.features.aiChat.title"),
+      description: t("home.features.aiChat.description"),
+      accent: "bg-pink-500/10",
+      iconColor: "text-pink-500",
+    },
+  ];
 
   return (
     <ScrollView
@@ -102,10 +106,8 @@ export default function HomeScreen() {
         style={{ paddingTop: insets.top + 16 }}
       >
         <View>
-          <Text className="text-sm text-default-400 mb-1">Good to see you,</Text>
-          <Text className="text-2xl font-bold text-default-foreground">
-            {firstName}
-          </Text>
+          <Text className="text-sm text-default-400 mb-1">{t("home.greeting")}</Text>
+          <Text className="text-2xl font-bold text-default-foreground">{firstName}</Text>
         </View>
         <View className="size-10 bg-primary/10 rounded-2xl items-center justify-center">
           <SIonicons size={20} name="hand-right-outline" className="text-primary" />
@@ -115,7 +117,7 @@ export default function HomeScreen() {
       {/* Quick actions */}
       <View className="px-4 mb-6">
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mb-3">
-          Quick Actions
+          {t("home.quickActions")}
         </Text>
         <View className="flex-row gap-x-3">
           <Pressable
@@ -126,7 +128,7 @@ export default function HomeScreen() {
               <SIonicons size={22} name="chatbubble-ellipses" className="text-primary-foreground" />
             </View>
             <Text className="text-primary-foreground font-semibold text-sm">
-              Start Chat
+              {t("home.startChat")}
             </Text>
           </Pressable>
           <Pressable
@@ -137,16 +139,37 @@ export default function HomeScreen() {
               <SIonicons size={22} name="person-circle-outline" className="text-default-600" />
             </View>
             <Text className="text-default-600 font-semibold text-sm">
-              Edit Profile
+              {t("home.editProfile")}
             </Text>
           </Pressable>
         </View>
       </View>
 
+      {/* Paywall demo banner */}
+      <View className="px-4 mb-6">
+        <Pressable
+          onPress={() => presentPaywall().catch(() => {})}
+          className="bg-amber-500 rounded-2xl p-4 flex-row items-center gap-x-4 active:opacity-80"
+        >
+          <View className="size-10 bg-white/20 rounded-xl items-center justify-center">
+            <SIonicons size={22} name="star" className="text-white" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-white font-bold text-sm">{t("home.tryPro")}</Text>
+            <Text className="text-amber-100 text-xs mt-0.5">{t("home.tryProDesc")}</Text>
+          </View>
+          <View className="bg-white/20 rounded-full px-2.5 py-1">
+            <Text className="text-white text-xs font-semibold">
+              {isProUser ? "Pro ✓" : "Demo"}
+            </Text>
+          </View>
+        </Pressable>
+      </View>
+
       {/* Stack features */}
       <View className="px-4">
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mb-3">
-          What&apos;s Included
+          {t("home.whatsIncluded")}
         </Text>
         <View className="gap-y-2">
           {STACK_FEATURES.map((item) => (

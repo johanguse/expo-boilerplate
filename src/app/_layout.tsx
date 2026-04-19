@@ -1,3 +1,5 @@
+// i18n must be imported first — side-effect initializes i18next before any screen
+import "@i18n";
 import AppProvider from "@components/providers";
 import useAuthManage from "@services/zustand/auth.zustand";
 import { Redirect, Stack, usePathname } from "expo-router";
@@ -45,8 +47,14 @@ function AppLayout() {
     );
   }
 
+  // Logged-in users must never sit on onboarding or auth screens —
+  // the navigator can fall back there when Stack.Protected unmounts (auth).
+  if (isLogin && (pathname.startsWith("/onboarding") || pathname.startsWith("/(auth)"))) {
+    return <Redirect href="/(tabs)" />;
+  }
+
   // Redirect to onboarding if not completed
-  if (!onboardingDone && !pathname.startsWith("/onboarding")) {
+  if (!isLogin && !onboardingDone && !pathname.startsWith("/onboarding")) {
     return <Redirect href="/onboarding" />;
   }
 

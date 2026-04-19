@@ -1,6 +1,7 @@
 import ChatBubble from "@components/chat/ChatBubble";
 import ChatInput from "@components/chat/ChatInput";
 import StreamingIndicator from "@components/chat/StreamingIndicator";
+import { useTranslation } from "@i18n";
 import useChatStore from "@services/zustand/chat.zustand";
 import { LegendList } from "@legendapp/list";
 import { Button } from "heroui-native/button";
@@ -10,26 +11,30 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SIonicons } from "@components/common/Icons";
 import type { Message } from "@services/zustand/chat.zustand";
 
-const SUGGESTIONS = [
-  "Explain quantum computing simply",
-  "Write a Python script to sort a list",
-  "Give me 5 startup ideas",
-];
-
-function EmptyChat({ onSuggest }: { onSuggest: (text: string) => void }) {
+function EmptyChat({
+  onSuggest,
+  suggestions,
+  title,
+  subtitle,
+}: {
+  onSuggest: (text: string) => void;
+  suggestions: string[];
+  title: string;
+  subtitle: string;
+}) {
   return (
     <View className="flex-1 items-center justify-center px-6">
       <View className="size-16 bg-primary/10 rounded-3xl items-center justify-center mb-5">
         <SIonicons size={28} name="sparkles" className="text-primary" />
       </View>
       <Text className="text-xl font-bold text-default-foreground text-center mb-2">
-        AI Assistant
+        {title}
       </Text>
       <Text className="text-default-500 text-center text-sm leading-relaxed mb-8">
-        Ask me anything. I can help you write, analyze, brainstorm, and more.
+        {subtitle}
       </Text>
       <View className="w-full gap-y-2">
-        {SUGGESTIONS.map((s) => (
+        {suggestions.map((s) => (
           <Pressable
             key={s}
             onPress={() => onSuggest(s)}
@@ -51,13 +56,15 @@ export default function ChatScreen() {
   const clearHistory = useChatStore((s) => s.clearHistory);
   const listRef = useRef<any>(null);
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+
+  const suggestions = t("chat.suggestions", { returnObjects: true }) as string[];
 
   // Filter out empty assistant placeholder — show StreamingIndicator instead
   const visibleMessages = messages.filter(
     (m) => !(m.role === "assistant" && m.content === "" && isStreaming)
   );
 
-  // Show the animated dots only when the assistant message placeholder is still empty
   const lastMsg = messages[messages.length - 1];
   const showIndicator =
     isStreaming && lastMsg?.role === "assistant" && lastMsg.content === "";
@@ -87,13 +94,13 @@ export default function ChatScreen() {
             <SIonicons size={16} name="sparkles" className="text-primary" />
           </View>
           <Text className="text-base font-semibold text-default-foreground">
-            AI Chat
+            {t("chat.title")}
           </Text>
         </View>
         {hasMessages && (
           <Button size="sm" variant="ghost" onPress={clearHistory}>
             <SIonicons size={15} name="trash-outline" className="text-default-400" />
-            <Button.Label className="text-default-400 text-xs">Clear</Button.Label>
+            <Button.Label className="text-default-400 text-xs">{t("chat.clear")}</Button.Label>
           </Button>
         )}
       </View>
@@ -101,7 +108,12 @@ export default function ChatScreen() {
       {/* Messages */}
       <View className="flex-1">
         {!hasMessages ? (
-          <EmptyChat onSuggest={handleSend} />
+          <EmptyChat
+            onSuggest={handleSend}
+            suggestions={Array.isArray(suggestions) ? suggestions : []}
+            title={t("chat.emptyTitle")}
+            subtitle={t("chat.emptySubtitle")}
+          />
         ) : (
           <LegendList
             ref={listRef}
@@ -117,7 +129,11 @@ export default function ChatScreen() {
       </View>
 
       {/* Input */}
-      <ChatInput onSend={handleSend} isStreaming={isStreaming} />
+      <ChatInput
+        onSend={handleSend}
+        isStreaming={isStreaming}
+        placeholder={t("chat.placeholder")}
+      />
     </View>
   );
 }

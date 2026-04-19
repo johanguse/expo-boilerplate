@@ -11,15 +11,29 @@ interface RequestOptions {
   formData?: URLSearchParams;
 }
 
+// Human-readable messages for fastapi-users error codes
+const FRIENDLY_ERRORS: Record<string, string> = {
+  LOGIN_BAD_CREDENTIALS: "Invalid email or password.",
+  LOGIN_USER_NOT_VERIFIED: "Please verify your email before signing in.",
+  REGISTER_USER_ALREADY_EXISTS: "An account with this email already exists.",
+  RESET_PASSWORD_BAD_TOKEN: "This reset link is invalid or has expired.",
+  RESET_PASSWORD_INVALID_PASSWORD: "New password does not meet requirements.",
+  VERIFY_USER_ALREADY_VERIFIED: "Your email is already verified.",
+  VERIFY_USER_BAD_TOKEN: "This verification link is invalid or has expired.",
+  UPDATE_USER_EMAIL_ALREADY_EXISTS: "This email is already in use.",
+  UPDATE_USER_INVALID_PASSWORD: "Current password is incorrect.",
+};
+
 export class ApiError extends Error {
   status: number;
   detail: string;
 
   constructor(status: number, detail: string) {
-    super(detail);
+    const friendly = FRIENDLY_ERRORS[detail] ?? detail;
+    super(friendly);
     this.name = "ApiError";
     this.status = status;
-    this.detail = detail;
+    this.detail = friendly;
   }
 }
 
@@ -58,7 +72,8 @@ async function request<T>(
 
   if (options?.formData) {
     headers["Content-Type"] = "application/x-www-form-urlencoded";
-    fetchBody = options.formData;
+    // React Native fetch doesn't auto-serialize URLSearchParams — must call .toString()
+    fetchBody = options.formData.toString();
   } else if (body !== undefined) {
     headers["Content-Type"] = "application/json";
     fetchBody = JSON.stringify(body);
@@ -89,9 +104,20 @@ async function request<T>(
   }
 
   if (!response.ok) {
-    const detail =
-      (data as any)?.detail ??
-      (typeof data === "string" ? data : `Request failed (${response.status})`);
+    const rawDetail = (data as any)?.detail;
+    let detail: string;
+
+    if (Array.isArray(rawDetail)) {
+      // FastAPI validation errors: [{type, loc, msg, input}, ...]
+      detail = rawDetail.map((e: any) => e?.msg ?? String(e)).join(". ");
+    } else if (typeof rawDetail === "string") {
+      detail = rawDetail;
+    } else if (typeof data === "string") {
+      detail = data;
+    } else {
+      detail = `Request failed (${response.status})`;
+    }
+
     throw new ApiError(response.status, detail);
   }
 

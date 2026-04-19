@@ -1,0 +1,208 @@
+{
+  "common": {
+    "email": "Email",
+    "password": "Password",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "language": "Language"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "pt": "Português"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "errorTitle": "Sign in failed"
+    },
+    "signup": {
+      "title": "Create account",
+      "subtitle": "Get started for free",
+      "fullName": "Full Name",
+      "confirmPassword": "Confirm Password",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "errorTitle": "Sign up failed",
+      "successTitle": "Welcome!",
+      "successMessage": "Account created successfully"
+    },
+    "forgotPassword": {
+      "title": "Reset password",
+      "subtitle": "Enter your email and we'll send you instructions to reset your password.",
+      "submit": "Send Reset Link",
+      "remembered": "Remembered it?",
+      "backToSignIn": "Back to sign in",
+      "successTitle": "Email sent",
+      "successMessage": "If that account exists, you'll receive reset instructions."
+    }
+  },
+  "onboarding": {
+    "next": "Next",
+    "getStarted": "Get Started!",
+    "welcome": {
+      "title": "Expo + FastAPI",
+      "subtitle": "A production-ready boilerplate for building mobile apps with an AI-powered backend.",
+      "features": {
+        "auth": "Secure JWT auth",
+        "chat": "Streaming AI chat",
+        "payments": "In-app purchases",
+        "uploads": "File uploads"
+      }
+    },
+    "setup": {
+      "title": "Everything you need",
+      "subtitle": "Your app comes with a complete stack ready to customize.",
+      "auth": {
+        "title": "Authentication",
+        "description": "Email/password login, JWT tokens, password reset"
+      },
+      "chat": {
+        "title": "AI Chat",
+        "description": "Streaming AI responses via OpenRouter + Claude"
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "RevenueCat in-app purchases + Stripe on the backend"
+      },
+      "backend": {
+        "title": "FastAPI Backend",
+        "description": "REST API with SQLAlchemy, Alembic, and more"
+      },
+      "i18n": {
+        "title": "Internationalization",
+        "description": "i18next + expo-localization with language switching"
+      }
+    }
+  },
+  "home": {
+    "greeting": "Good to see you,",
+    "tryPro": "Try Paywall Demo",
+    "tryProDesc": "See how in-app purchases look",
+    "quickActions": "Quick Actions",
+    "startChat": "Start Chat",
+    "editProfile": "Edit Profile",
+    "whatsIncluded": "What's Included",
+    "features": {
+      "router": {
+        "title": "Expo Router",
+        "description": "File-based routing with type-safe navigation"
+      },
+      "heroui": {
+        "title": "HeroUI Native",
+        "description": "Accessible, beautiful UI component library"
+      },
+      "zustand": {
+        "title": "Zustand",
+        "description": "Lightweight, fast state management"
+      },
+      "auth": {
+        "title": "FastAPI Auth",
+        "description": "JWT authentication with your backend"
+      },
+      "revenuecat": {
+        "title": "RevenueCat",
+        "description": "In-app purchases and subscriptions"
+      },
+      "aiChat": {
+        "title": "AI Chat",
+        "description": "Streaming AI responses via OpenRouter"
+      }
+    }
+  },
+  "chat": {
+    "title": "AI Chat",
+    "clear": "Clear",
+    "emptyTitle": "AI Assistant",
+    "emptySubtitle": "Ask me anything. I can help you write, analyze, brainstorm, and more.",
+    "placeholder": "Message\u2026",
+    "suggestions": [
+      "Explain quantum computing simply",
+      "Write a Python script to sort a list",
+      "Give me 5 startup ideas"
+    ]
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit",
+    "noName": "No name set",
+    "about": "About",
+    "details": "Details",
+    "account": "Account",
+    "emailVerified": "Email verified",
+    "emailNotVerified": "Email not verified",
+    "verified": "Verified",
+    "pending": "Pending",
+    "joined": "Joined"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "appearance": "Appearance",
+    "about": "About",
+    "editProfile": "Edit Profile",
+    "email": "Email",
+    "accountStatus": "Account Status",
+    "darkMode": "Dark Mode",
+    "version": "Version",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "signOut": "Sign Out",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "security": "Security",
+    "changePassword": "Change Password"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "current": "Current Password",
+    "new": "New Password",
+    "confirm": "Confirm New Password",
+    "submit": "Update Password",
+    "successTitle": "Done",
+    "successMessage": "Your password has been updated.",
+    "errorTitle": "Failed",
+    "mismatch": "Passwords don't match",
+    "tooShort": "Must be at least 8 characters"
+  },
+  "security": {
+    "title": "Security",
+    "emailVerification": "Email Verification",
+    "verifiedDesc": "Your email address is verified.",
+    "unverifiedDesc": "Please verify your email to secure your account.",
+    "resend": "Resend Verification Email",
+    "resendSuccess": "Verification email sent. Check your inbox.",
+    "resendError": "Failed to send email. Try again later.",
+    "changePassword": "Change Password",
+    "changePasswordDesc": "Update your account password",
+    "sessions": "Active Sessions",
+    "sessionsDesc": "You are signed in on this device"
+  },
+  "editProfile": {
+    "title": "Edit Profile",
+    "basic": "Basic",
+    "work": "Work",
+    "contact": "Contact",
+    "fullName": "Full Name",
+    "bio": "Bio",
+    "company": "Company",
+    "jobTitle": "Job Title",
+    "phone": "Phone",
+    "website": "Website",
+    "country": "Country",
+    "timezone": "Timezone",
+    "timezonePlaceholder": "e.g. America/New_York",
+    "submit": "Save Changes",
+    "successTitle": "Saved",
+    "successMessage": "Profile updated successfully",
+    "errorTitle": "Error",
+    "errorMessage": "Failed to update profile"
+  }
+}

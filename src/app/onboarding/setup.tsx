@@ -1,51 +1,61 @@
 import { SIonicons } from "@components/common/Icons";
-import { Text, View } from "react-native";
+import { useTranslation } from "@i18n";
+import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const STACK_ITEMS = [
-  {
-    icon: "lock-closed-outline",
-    color: "bg-blue-500/10",
-    iconColor: "text-blue-500",
-    title: "Authentication",
-    description: "Email/password login, JWT tokens, password reset",
-  },
-  {
-    icon: "chatbubble-ellipses-outline",
-    color: "bg-purple-500/10",
-    iconColor: "text-purple-500",
-    title: "AI Chat",
-    description: "Streaming AI responses via OpenRouter + Claude",
-  },
-  {
-    icon: "card-outline",
-    color: "bg-green-500/10",
-    iconColor: "text-green-500",
-    title: "Payments",
-    description: "RevenueCat in-app purchases + Stripe on the backend",
-  },
-  {
-    icon: "server-outline",
-    color: "bg-orange-500/10",
-    iconColor: "text-orange-500",
-    title: "FastAPI Backend",
-    description: "REST API with SQLAlchemy, Alembic, and more",
-  },
-];
 
 export default function SetupScreen() {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+
+  const STACK_ITEMS = [
+    {
+      icon: "lock-closed-outline",
+      color: "bg-blue-500/10",
+      iconColor: "text-blue-500",
+      title: t("onboarding.setup.auth.title"),
+      description: t("onboarding.setup.auth.description"),
+    },
+    {
+      icon: "chatbubble-ellipses-outline",
+      color: "bg-purple-500/10",
+      iconColor: "text-purple-500",
+      title: t("onboarding.setup.chat.title"),
+      description: t("onboarding.setup.chat.description"),
+    },
+    {
+      icon: "card-outline",
+      color: "bg-green-500/10",
+      iconColor: "text-green-500",
+      title: t("onboarding.setup.payments.title"),
+      description: t("onboarding.setup.payments.description"),
+    },
+    {
+      icon: "server-outline",
+      color: "bg-orange-500/10",
+      iconColor: "text-orange-500",
+      title: t("onboarding.setup.backend.title"),
+      description: t("onboarding.setup.backend.description"),
+    },
+    {
+      icon: "language-outline",
+      color: "bg-teal-500/10",
+      iconColor: "text-teal-500",
+      title: t("onboarding.setup.i18n.title"),
+      description: t("onboarding.setup.i18n.description"),
+    },
+  ];
 
   return (
-    <View
-      className="flex-1 bg-background px-6"
-      style={{ paddingTop: insets.top + 24 }}
+    <ScrollView
+      className="flex-1 bg-background"
+      contentContainerStyle={{ paddingTop: insets.top + 24, paddingHorizontal: 24, paddingBottom: 32 }}
+      showsVerticalScrollIndicator={false}
     >
       <Text className="text-3xl font-bold text-default-foreground mb-2">
-        Everything you need
+        {t("onboarding.setup.title")}
       </Text>
       <Text className="text-default-400 text-base mb-8">
-        Your app comes with a complete stack ready to customize.
+        {t("onboarding.setup.subtitle")}
       </Text>
 
       <View className="gap-y-3">
@@ -68,6 +78,6 @@ export default function SetupScreen() {
           </View>
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
 }

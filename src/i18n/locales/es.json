@@ -1,0 +1,208 @@
+{
+  "common": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "error": "Error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "language": "Idioma"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "pt": "Português"
+  },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Inicia sesión en tu cuenta",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUp": "Regístrate",
+      "errorTitle": "Error al iniciar sesión"
+    },
+    "signup": {
+      "title": "Crear cuenta",
+      "subtitle": "Empieza gratis",
+      "fullName": "Nombre completo",
+      "confirmPassword": "Confirmar contraseña",
+      "submit": "Crear cuenta",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signIn": "Iniciar sesión",
+      "errorTitle": "Error al registrarse",
+      "successTitle": "¡Bienvenido!",
+      "successMessage": "Cuenta creada exitosamente"
+    },
+    "forgotPassword": {
+      "title": "Restablecer contraseña",
+      "subtitle": "Ingresa tu correo y te enviaremos instrucciones para restablecer tu contraseña.",
+      "submit": "Enviar enlace",
+      "remembered": "¿Lo recordaste?",
+      "backToSignIn": "Volver a iniciar sesión",
+      "successTitle": "Correo enviado",
+      "successMessage": "Si esa cuenta existe, recibirás las instrucciones de restablecimiento."
+    }
+  },
+  "onboarding": {
+    "next": "Siguiente",
+    "getStarted": "¡Empezar!",
+    "welcome": {
+      "title": "Expo + FastAPI",
+      "subtitle": "Un boilerplate listo para producción para crear apps móviles con backend de IA.",
+      "features": {
+        "auth": "Auth JWT seguro",
+        "chat": "Chat IA en streaming",
+        "payments": "Compras in-app",
+        "uploads": "Subida de archivos"
+      }
+    },
+    "setup": {
+      "title": "Todo lo que necesitas",
+      "subtitle": "Tu app viene con un stack completo listo para personalizar.",
+      "auth": {
+        "title": "Autenticación",
+        "description": "Login con email/contraseña, tokens JWT, restablecimiento de contraseña"
+      },
+      "chat": {
+        "title": "Chat con IA",
+        "description": "Respuestas en streaming via OpenRouter + Claude"
+      },
+      "payments": {
+        "title": "Pagos",
+        "description": "RevenueCat para compras in-app + Stripe en el backend"
+      },
+      "backend": {
+        "title": "Backend FastAPI",
+        "description": "API REST con SQLAlchemy, Alembic y más"
+      },
+      "i18n": {
+        "title": "Internacionalización",
+        "description": "i18next + expo-localization con cambio de idioma"
+      }
+    }
+  },
+  "home": {
+    "greeting": "Qué bueno verte,",
+    "tryPro": "Demo del Paywall",
+    "tryProDesc": "Mira cómo se ven las compras in-app",
+    "quickActions": "Acciones rápidas",
+    "startChat": "Iniciar chat",
+    "editProfile": "Editar perfil",
+    "whatsIncluded": "Qué está incluido",
+    "features": {
+      "router": {
+        "title": "Expo Router",
+        "description": "Rutas basadas en archivos con navegación tipada"
+      },
+      "heroui": {
+        "title": "HeroUI Native",
+        "description": "Biblioteca de componentes UI accesible y hermosa"
+      },
+      "zustand": {
+        "title": "Zustand",
+        "description": "Gestión de estado ligera y rápida"
+      },
+      "auth": {
+        "title": "Auth FastAPI",
+        "description": "Autenticación JWT con tu backend"
+      },
+      "revenuecat": {
+        "title": "RevenueCat",
+        "description": "Compras y suscripciones in-app"
+      },
+      "aiChat": {
+        "title": "Chat con IA",
+        "description": "Respuestas en streaming via OpenRouter"
+      }
+    }
+  },
+  "chat": {
+    "title": "Chat IA",
+    "clear": "Limpiar",
+    "emptyTitle": "Asistente IA",
+    "emptySubtitle": "Pregúntame lo que quieras. Puedo ayudarte a escribir, analizar, idear y más.",
+    "placeholder": "Mensaje…",
+    "suggestions": [
+      "Explica la computación cuántica de forma sencilla",
+      "Escribe un script Python para ordenar una lista",
+      "Dame 5 ideas de startup"
+    ]
+  },
+  "profile": {
+    "title": "Perfil",
+    "edit": "Editar",
+    "noName": "Sin nombre",
+    "about": "Acerca de",
+    "details": "Detalles",
+    "account": "Cuenta",
+    "emailVerified": "Correo verificado",
+    "emailNotVerified": "Correo no verificado",
+    "verified": "Verificado",
+    "pending": "Pendiente",
+    "joined": "Se unió"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "account": "Cuenta",
+    "appearance": "Apariencia",
+    "about": "Acerca de",
+    "editProfile": "Editar perfil",
+    "email": "Correo electrónico",
+    "accountStatus": "Estado de la cuenta",
+    "darkMode": "Modo oscuro",
+    "version": "Versión",
+    "privacyPolicy": "Política de privacidad",
+    "termsOfService": "Términos de servicio",
+    "signOut": "Cerrar sesión",
+    "verified": "Verificado",
+    "unverified": "No verificado",
+    "security": "Seguridad",
+    "changePassword": "Cambiar Contraseña"
+  },
+  "changePassword": {
+    "title": "Cambiar Contraseña",
+    "current": "Contraseña Actual",
+    "new": "Nueva Contraseña",
+    "confirm": "Confirmar Nueva Contraseña",
+    "submit": "Actualizar Contraseña",
+    "successTitle": "Listo",
+    "successMessage": "Tu contraseña ha sido actualizada.",
+    "errorTitle": "Error",
+    "mismatch": "Las contraseñas no coinciden",
+    "tooShort": "Debe tener al menos 8 caracteres"
+  },
+  "security": {
+    "title": "Seguridad",
+    "emailVerification": "Verificación de Correo",
+    "verifiedDesc": "Tu dirección de correo está verificada.",
+    "unverifiedDesc": "Verifica tu correo para proteger tu cuenta.",
+    "resend": "Reenviar Email de Verificación",
+    "resendSuccess": "Email de verificación enviado. Revisa tu bandeja.",
+    "resendError": "Error al enviar el email. Inténtalo de nuevo.",
+    "changePassword": "Cambiar Contraseña",
+    "changePasswordDesc": "Actualiza la contraseña de tu cuenta",
+    "sessions": "Sesiones Activas",
+    "sessionsDesc": "Estás conectado en este dispositivo"
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "basic": "Básico",
+    "work": "Trabajo",
+    "contact": "Contacto",
+    "fullName": "Nombre completo",
+    "bio": "Bio",
+    "company": "Empresa",
+    "jobTitle": "Puesto",
+    "phone": "Teléfono",
+    "website": "Sitio web",
+    "country": "País",
+    "timezone": "Zona horaria",
+    "timezonePlaceholder": "ej: America/Mexico_City",
+    "submit": "Guardar cambios",
+    "successTitle": "Guardado",
+    "successMessage": "Perfil actualizado exitosamente",
+    "errorTitle": "Error",
+    "errorMessage": "Error al actualizar el perfil"
+  }
+}

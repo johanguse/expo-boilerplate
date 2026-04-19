@@ -1,11 +1,14 @@
 import { SIonicons } from "@components/common/Icons";
+import LanguageSwitcher from "@components/common/LanguageSwitcher";
 import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
 import useAppForm from "@hooks/form.hook";
+import { useTranslation } from "@i18n";
 import useAuthManage from "@services/zustand/auth.zustand";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -16,7 +19,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { email, object, string } from "zod";
-import { useRouter } from "expo-router";
 
 const validationSchema = object({
   name: string().nonempty("Name is required"),
@@ -43,6 +45,7 @@ export default function SignUpPage() {
   const insets = useSafeAreaInsets();
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const { t } = useTranslation();
 
   const Form = useAppForm({
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
@@ -51,16 +54,15 @@ export default function SignUpPage() {
       try {
         await signUp(value.email, value.password, value.name);
         toast.show({
-          label: "Welcome!",
+          label: t("auth.signup.successTitle"),
           variant: "success",
-          description: "Account created successfully",
+          description: t("auth.signup.successMessage"),
         });
       } catch (error: any) {
         toast.show({
-          label: "Sign up failed",
+          label: t("auth.signup.errorTitle"),
           variant: "danger",
-          description:
-            error?.detail ?? error?.message ?? "Something went wrong",
+          description: error?.detail ?? error?.message ?? t("auth.signup.errorTitle"),
         });
       }
     },
@@ -84,10 +86,10 @@ export default function SignUpPage() {
             <SIonicons size={32} name="rocket" className="text-primary-foreground" />
           </View>
           <Text className="text-2xl font-bold text-default-foreground">
-            Create account
+            {t("auth.signup.title")}
           </Text>
           <Text className="text-default-400 text-sm mt-1">
-            Get started for free
+            {t("auth.signup.subtitle")}
           </Text>
         </View>
 
@@ -95,7 +97,7 @@ export default function SignUpPage() {
         <View className="px-6 gap-y-3">
           <Form.AppField name="name">
             {() => (
-              <FormInput label="Full Name" autoCapitalize="words">
+              <FormInput label={t("auth.signup.fullName")} autoCapitalize="words">
                 <InputGroup.Prefix isDecorative>
                   <SIonicons size={18} name="person-outline" className="text-default-400" />
                 </InputGroup.Prefix>
@@ -105,11 +107,7 @@ export default function SignUpPage() {
 
           <Form.AppField name="email">
             {() => (
-              <FormInput
-                label="Email"
-                autoCapitalize="none"
-                keyboardType="email-address"
-              >
+              <FormInput label={t("common.email")} autoCapitalize="none" keyboardType="email-address">
                 <InputGroup.Prefix isDecorative>
                   <SIonicons size={18} name="mail-outline" className="text-default-400" />
                 </InputGroup.Prefix>
@@ -119,30 +117,13 @@ export default function SignUpPage() {
 
           <Form.AppField name="password">
             {() => (
-              <FormInput
-                label="Password"
-                autoCapitalize="none"
-                secureTextEntry={!showPass}
-              >
+              <FormInput label={t("common.password")} autoCapitalize="none" secureTextEntry={!showPass}>
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons
-                    size={18}
-                    name="lock-closed-outline"
-                    className="text-default-400"
-                  />
+                  <SIonicons size={18} name="lock-closed-outline" className="text-default-400" />
                 </InputGroup.Prefix>
                 <InputGroup.Suffix>
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="ghost"
-                    onPress={() => setShowPass(!showPass)}
-                  >
-                    <SIonicons
-                      size={18}
-                      name={showPass ? "eye" : "eye-off"}
-                      className="text-default-400"
-                    />
+                  <Button isIconOnly size="sm" variant="ghost" onPress={() => setShowPass(!showPass)}>
+                    <SIonicons size={18} name={showPass ? "eye" : "eye-off"} className="text-default-400" />
                   </Button>
                 </InputGroup.Suffix>
               </FormInput>
@@ -151,30 +132,13 @@ export default function SignUpPage() {
 
           <Form.AppField name="confirmPassword">
             {() => (
-              <FormInput
-                label="Confirm Password"
-                autoCapitalize="none"
-                secureTextEntry={!showConfirmPass}
-              >
+              <FormInput label={t("auth.signup.confirmPassword")} autoCapitalize="none" secureTextEntry={!showConfirmPass}>
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons
-                    size={18}
-                    name="lock-closed-outline"
-                    className="text-default-400"
-                  />
+                  <SIonicons size={18} name="lock-closed-outline" className="text-default-400" />
                 </InputGroup.Prefix>
                 <InputGroup.Suffix>
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="ghost"
-                    onPress={() => setShowConfirmPass(!showConfirmPass)}
-                  >
-                    <SIonicons
-                      size={18}
-                      name={showConfirmPass ? "eye" : "eye-off"}
-                      className="text-default-400"
-                    />
+                  <Button isIconOnly size="sm" variant="ghost" onPress={() => setShowConfirmPass(!showConfirmPass)}>
+                    <SIonicons size={18} name={showConfirmPass ? "eye" : "eye-off"} className="text-default-400" />
                   </Button>
                 </InputGroup.Suffix>
               </FormInput>
@@ -185,19 +149,22 @@ export default function SignUpPage() {
 
           <Form.AppForm>
             <FormButton>
-              <Button.Label>Create Account</Button.Label>
+              <Button.Label>{t("auth.signup.submit")}</Button.Label>
             </FormButton>
           </Form.AppForm>
         </View>
 
+        {/* Language switcher */}
+        <View className="items-center mt-4">
+          <LanguageSwitcher />
+        </View>
+
         {/* Footer */}
-        <View className="flex-row justify-center items-center mt-6 pb-8 gap-x-1">
-          <Text className="text-default-500 text-sm">
-            Already have an account?
-          </Text>
+        <View className="flex-row justify-center items-center mt-4 pb-8 gap-x-1">
+          <Text className="text-default-500 text-sm">{t("auth.signup.hasAccount")}</Text>
           <Button variant="ghost" size="sm" onPress={() => router.back()}>
             <Button.Label className="text-primary font-semibold text-sm">
-              Sign in
+              {t("auth.signup.signIn")}
             </Button.Label>
           </Button>
         </View>

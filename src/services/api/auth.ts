@@ -80,3 +80,25 @@ export async function forgotPasswordAPI(email: string): Promise<void> {
 export async function getCurrentUser(): Promise<UserProfile> {
   return apiClient.get<UserProfile>("/users/me");
 }
+
+/**
+ * Change password for the currently authenticated user.
+ */
+export async function changePasswordAPI(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; message: string }> {
+  return apiClient.post("/users/me/change-password", {
+    current_password: currentPassword,
+    new_password: newPassword,
+  });
+}
+
+/**
+ * Resend email verification to the given address.
+ */
+export async function resendVerificationAPI(
+  email: string
+): Promise<{ success: boolean; message: string }> {
+  return apiClient.post("/resend-verification", { email }, { noAuth: true });
+}
