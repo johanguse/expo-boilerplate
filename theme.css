@@ -1,16 +1,49 @@
 @theme inline {
   --color-demo: var(--demo);
+
+  /* default color scale (heroui-native only ships base + foreground) */
+  --color-default-50: var(--default-50);
+  --color-default-100: var(--default-100);
+  --color-default-200: var(--default-200);
+  --color-default-300: var(--default-300);
+  --color-default-400: var(--default-400);
+  --color-default-500: var(--default-500);
+  --color-default-600: var(--default-600);
+  --color-default-700: var(--default-700);
+  --color-default-800: var(--default-800);
+  --color-default-900: var(--default-900);
 }
 
-/* global.css */
 @layer theme {
   :root {
     @variant light {
       --demo: #0202ff;
+
+      --default-50: oklch(97% 0.001 286.375);
+      --default-100: oklch(94% 0.001 286.375);
+      --default-200: oklch(89% 0.002 286.375);
+      --default-300: oklch(78% 0.003 286.375);
+      --default-400: oklch(60% 0.004 286.375);
+      --default-500: oklch(48% 0.005 286.375);
+      --default-600: oklch(38% 0.006 286.375);
+      --default-700: oklch(30% 0.006 286.375);
+      --default-800: oklch(22% 0.006 286.375);
+      --default-900: oklch(15% 0.005 286.375);
     }
 
     @variant dark {
       --demo: #909;
+
+      --default-50: oklch(15% 0.005 285.823);
+      --default-100: oklch(22% 0.005 285.823);
+      --default-200: oklch(28% 0.006 285.823);
+      --default-300: oklch(40% 0.007 285.823);
+      --default-400: oklch(56% 0.008 285.823);
+      --default-500: oklch(66% 0.009 285.823);
+      --default-600: oklch(75% 0.009 285.823);
+      --default-700: oklch(82% 0.008 285.823);
+      --default-800: oklch(89% 0.005 285.823);
+      --default-900: oklch(94% 0.003 285.823);
     }
   }
 }
