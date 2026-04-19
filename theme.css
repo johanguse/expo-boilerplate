@@ -1,6 +1,12 @@
 @theme inline {
   --color-demo: var(--demo);
 
+  /* primary = heroui-native's accent color, defined per-variant so the
+     native CSS compiler resolves it at build time (var() cross-references
+     to heroui-native's @layer theme don't compile reliably for native) */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
   /* default color scale (heroui-native only ships base + foreground) */
   --color-default-50: var(--default-50);
   --color-default-100: var(--default-100);
@@ -19,6 +25,10 @@
     @variant light {
       --demo: #0202ff;
 
+      /* matches heroui-native --accent / --snow */
+      --primary: oklch(0.6204 0.195 253.83);
+      --primary-foreground: oklch(0.9911 0 0);
+
       --default-50: oklch(97% 0.001 286.375);
       --default-100: oklch(94% 0.001 286.375);
       --default-200: oklch(89% 0.002 286.375);
@@ -33,6 +43,10 @@
 
     @variant dark {
       --demo: #909;
+
+      /* matches heroui-native --accent / --snow */
+      --primary: oklch(0.6204 0.195 253.83);
+      --primary-foreground: oklch(0.9911 0 0);
 
       --default-50: oklch(15% 0.005 285.823);
       --default-100: oklch(22% 0.005 285.823);
