@@ -119,6 +119,8 @@
   },
   "chat": {
     "title": "AI Chat",
+    "readMore": "Read more",
+    "readLess": "Show less",
     "clear": "Clear",
     "emptyTitle": "AI Assistant",
     "emptySubtitle": "Ask me anything. I can help you write, analyze, brainstorm, and more.",

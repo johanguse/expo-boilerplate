@@ -68,13 +68,23 @@ export default function Chat() {
   const showIndicator =
     isStreaming && lastMsg?.role === "assistant" && lastMsg.content === "";
 
+  const lastMessageId = messages[messages.length - 1]?.id;
+
   const renderItem = useCallback(
     ({ item, index }: { item: Message; index: number }) => {
       const prev = visibleMessages[index - 1];
       const isConsecutive = !!prev && prev.role === item.role;
-      return <ChatBubble message={item} isConsecutive={isConsecutive} />;
+      const isStreamingThisBubble =
+        isStreaming && item.role === "assistant" && item.id === lastMessageId;
+      return (
+        <ChatBubble
+          message={item}
+          isConsecutive={isConsecutive}
+          isStreaming={!!isStreamingThisBubble}
+        />
+      );
     },
-    [visibleMessages]
+    [visibleMessages, isStreaming, lastMessageId]
   );
 
   function handleSend(text: string) {

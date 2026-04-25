@@ -1,3 +1,7 @@
+/**
+ * Typing dots only (no body copy). Bubble text uses expo-pretext in ChatBubble;
+ * no pretext components needed here.
+ */
 import React, { useEffect, useRef } from "react";
 import { Animated, View } from "react-native";
 
