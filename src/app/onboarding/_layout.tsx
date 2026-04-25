@@ -4,7 +4,7 @@ import { useOnboarding } from "@contexts/onboarding-context";
 import { OnboardingButton } from "@components/onboarding/OnboardingButton";
 import { StepHeader } from "@components/onboarding/StepHeader";
 import { useTranslation } from "@i18n";
-import useAuthManage from "@services/zustand/auth.zustand";
+import useAuthManage from "@stores/auth.zustand";
 
 const TOTAL_STEPS = 2;
 

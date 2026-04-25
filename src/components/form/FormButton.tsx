@@ -1,25 +1,33 @@
-import { createFormHookContexts } from '@tanstack/react-form';
-import React, { PropsWithChildren, Suspense } from 'react';
-import ActionButton, { ActionButtonProps } from '../common/ActionButton';
+import ActionButton, { ActionButtonProps } from "@components/common/ActionButton";
+import React, { PropsWithChildren } from "react";
 
-const { useFormContext } = createFormHookContexts();
-
-type FormButtonProps = PropsWithChildren<
-  Omit<ActionButtonProps, 'children' | 'action'>
-> & {
-  loadingText?: string;
+export type SubmitFormHandle = {
+  handleSubmit: () => void | Promise<void>;
+  state: { isSubmitting: boolean };
 };
 
-const FormButton: React.FC<FormButtonProps> = props => {
-  const form = useFormContext();
+type FormButtonProps = PropsWithChildren<
+  Omit<
+    ActionButtonProps,
+    "children" | "action" | "isSubmitting" | "feedbackVariant"
+  > & {
+    form: SubmitFormHandle;
+  }
+>;
+
+const FormButton: React.FC<FormButtonProps> = (props) => {
+  const { form, children, ...rest } = props;
 
   return (
     <ActionButton
-      action={form.handleSubmit}
-      isSubmitting={form.state.isSubmitting}
-      {...props}
-    >
-      {props.children}
+      {...rest}
+      feedbackVariant="none"
+      animation="disable-all"
+      action={async () => {
+        await form.handleSubmit();
+      }}
+      isSubmitting={form.state.isSubmitting}>
+      {children}
     </ActionButton>
   );
 };

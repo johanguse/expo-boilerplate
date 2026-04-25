@@ -5,11 +5,8 @@ import type { FeatureToggleConfig } from "./types.js";
  */
 export const API_BACKEND_TOGGLE: FeatureToggleConfig = {
   filesToRemove: [
-    "src/services/api",
+    "src/api",
     "src/config/api.ts",
-    "src/screens/auth/Signup.tsx",
-    "src/screens/auth/ForgotPassword.tsx",
-    "src/screens/tabs/Profile.tsx",
     "src/app/(auth)/signup.tsx",
     "src/app/(auth)/forgot-password.tsx",
     "src/app/(tabs)/profile.tsx",

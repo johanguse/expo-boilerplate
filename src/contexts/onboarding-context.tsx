@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { storage, storage_instance, StorageKeys } from "@utils/storage";
+import { storage, storage_instance, StorageKeys } from "@lib/storage";
 
 type OnboardingContextType = {
   onboardingDone: boolean | null;

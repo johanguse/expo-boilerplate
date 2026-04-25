@@ -1,5 +1,8 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require("expo/metro-config");
+const { wrapWithReanimatedMetroConfig } = require(
+  "react-native-reanimated/metro-config"
+);
 const { withUniwindConfig } = require("uniwind/metro");
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -7,10 +10,12 @@ const config = getDefaultConfig(__dirname);
 
 // your metro modifications
 
-module.exports = withUniwindConfig(config, {
-  // relative path to your global.css file (from previous step)
-  cssEntryFile: "./global.css",
-  // (optional) path where we gonna auto-generate typings
-  // defaults to project's root
-  dtsFile: "./src/types/uniwind-types.d.ts",
-});
+module.exports = wrapWithReanimatedMetroConfig(
+  withUniwindConfig(config, {
+    // relative path to your global.css file (from previous step)
+    cssEntryFile: "./global.css",
+    // (optional) path where we gonna auto-generate typings
+    // defaults to project's root
+    dtsFile: "./src/types/uniwind-types.d.ts",
+  })
+);

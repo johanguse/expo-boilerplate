@@ -1,5 +1,5 @@
 /**
- * Tests for the API client (src/services/api/client.ts)
+ * Tests for the API client (src/api/client.ts)
  *
  * These tests mock `fetch` to verify:
  * - JSON request/response handling
@@ -8,8 +8,7 @@
  * - Form-urlencoded support
  */
 
-// Mock storage before imports
-jest.mock("@utils/storage", () => ({
+jest.mock("@lib/storage", () => ({
   storage: {
     getString: jest.fn(),
     set: jest.fn(),
@@ -23,16 +22,14 @@ jest.mock("@utils/storage", () => ({
   },
 }));
 
-// Mock config
 jest.mock("@config/api", () => ({
   API_BASE_URL: "http://test-api.local",
   API_V1: "http://test-api.local/api/v1",
 }));
 
-import { apiClient, ApiError } from "@services/api/client";
-import { storage, StorageKeys } from "@utils/storage";
+import { apiClient, ApiError } from "@api/client";
+import { storage } from "@lib/storage";
 
-// Mock global fetch
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
@@ -169,10 +166,14 @@ describe("apiClient", () => {
         json: async () => ({ detail: "LOGIN_BAD_CREDENTIALS" }),
       });
 
-      await expect(apiClient.post("/auth/jwt/login")).rejects.toThrow(ApiError);
-      await expect(apiClient.post("/auth/jwt/login")).rejects.toMatchObject({
+      await expect(
+        apiClient.post("/auth/jwt/login", undefined, { noAuth: true })
+      ).rejects.toThrow(ApiError);
+      await expect(
+        apiClient.post("/auth/jwt/login", undefined, { noAuth: true })
+      ).rejects.toMatchObject({
         status: 401,
-        detail: "LOGIN_BAD_CREDENTIALS",
+        detail: "Invalid email or password.",
       });
     });
 

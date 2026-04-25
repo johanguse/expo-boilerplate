@@ -1,4 +1,4 @@
-import { streamFetch } from "@services/streamClient";
+import { streamFetch } from "@lib/streamClient";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { streamChat, type ChatMessage } from "@services/api/ai";
+import { streamChat, type ChatMessage } from "@api/ai";
 
 export interface Message {
   id: string;
@@ -66,8 +66,11 @@ const useChatStore = create<ChatState>((set, get) => ({
           ),
         }));
       }
-    } catch (err: any) {
-      const errorText = err?.message ?? "Something went wrong. Please try again.";
+    } catch (err: unknown) {
+      const errorText =
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.";
       // Replace the empty assistant message with the error
       set((state) => ({
         messages: state.messages.map((m) =>

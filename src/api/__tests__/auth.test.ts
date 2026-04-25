@@ -1,12 +1,11 @@
 /**
- * Tests for the auth API module (src/services/api/auth.ts)
+ * Tests for the auth API module (src/api/auth.ts)
  *
  * These tests verify the auth API functions properly format requests
  * for the FastAPI backend (fastapi-users).
  */
 
-// Mock the client module
-jest.mock("@services/api/client", () => ({
+jest.mock("@api/client", () => ({
   apiClient: {
     get: jest.fn(),
     post: jest.fn(),
@@ -22,13 +21,13 @@ jest.mock("@services/api/client", () => ({
   },
 }));
 
-import { apiClient } from "@services/api/client";
+import { apiClient } from "@api/client";
 import {
   loginAPI,
   registerAPI,
   forgotPasswordAPI,
   getCurrentUser,
-} from "@services/api/auth";
+} from "@api/auth";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -51,7 +50,6 @@ describe("Auth API", () => {
         })
       );
 
-      // Verify form data contains username (not email) as per fastapi-users
       const formData = (apiClient.post as jest.Mock).mock.calls[0][2]
         .formData as URLSearchParams;
       expect(formData.get("username")).toBe("user@test.com");

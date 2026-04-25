@@ -29,6 +29,8 @@
     },
     "plugins": [
       "expo-router",
+      "expo-secure-store",
+      "expo-notifications",
       [
         "expo-splash-screen",
         {
@@ -39,6 +41,29 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      [
+        "react-native-nano-icons",
+        {
+          "iconSets": [
+            {
+              "inputDir": "./assets/icons/app-icons"
+            }
+          ]
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Notifications",
+            "Camera",
+            "PhotoLibrary",
+            "Microphone"
+          ]
         }
       ]
     ],

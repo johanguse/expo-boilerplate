@@ -9,11 +9,8 @@ describe("Feature Toggles", () => {
     it("should return api-backend toggle config", () => {
       const config = getFeatureToggle("api-backend");
 
-      expect(config.filesToRemove).toContain("src/services/api");
+      expect(config.filesToRemove).toContain("src/api");
       expect(config.filesToRemove).toContain("src/config/api.ts");
-      expect(config.filesToRemove).toContain("src/screens/auth/Signup.tsx");
-      expect(config.filesToRemove).toContain("src/screens/auth/ForgotPassword.tsx");
-      expect(config.filesToRemove).toContain("src/screens/tabs/Profile.tsx");
     });
 
     it("should return onboarding toggle config", () => {

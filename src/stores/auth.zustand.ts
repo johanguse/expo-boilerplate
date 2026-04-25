@@ -5,9 +5,9 @@ import {
   getCurrentUser,
   type AuthToken,
   type UserProfile,
-} from "@services/api/auth";
-import { setUnauthorizedHandler } from "@services/api/client";
-import { storage, StorageKeys } from "@utils/storage";
+} from "@api/auth";
+import { setUnauthorizedHandler } from "@api/client";
+import { storage, StorageKeys } from "@lib/storage";
 
 type AuthState = {
   /** Whether we're checking for a stored session on startup */

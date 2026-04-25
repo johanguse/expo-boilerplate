@@ -5,8 +5,10 @@ module.exports = {
   roots: ["<rootDir>/src", "<rootDir>/cli/src"],
   moduleNameMapper: {
     "^@config/(.*)$": "<rootDir>/src/config/$1",
+    "^@lib/(.*)$": "<rootDir>/src/lib/$1",
+    "^@api/(.*)$": "<rootDir>/src/api/$1",
+    "^@stores/(.*)$": "<rootDir>/src/stores/$1",
     "^@utils/(.*)$": "<rootDir>/src/utils/$1",
-    "^@services/(.*)$": "<rootDir>/src/services/$1",
     "^@contexts/(.*)$": "<rootDir>/src/contexts/$1",
   },
   testMatch: ["**/__tests__/**/*.test.ts"],
@@ -22,8 +24,10 @@ module.exports = {
           strict: true,
           paths: {
             "@config/*": ["./src/config/*"],
+            "@lib/*": ["./src/lib/*"],
+            "@api/*": ["./src/api/*"],
+            "@stores/*": ["./src/stores/*"],
             "@utils/*": ["./src/utils/*"],
-            "@services/*": ["./src/services/*"],
             "@contexts/*": ["./src/contexts/*"],
           },
         },

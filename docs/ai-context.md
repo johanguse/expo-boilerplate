@@ -1,129 +1,70 @@
-# AI Context — Expo Boilerplate
+# AI & developer context — expo-boilerplate
 
-> This file provides context for AI coding assistants working on this project.
+This file is the **single overview** of architecture and conventions for agents and humans working in this repo. Product-specific `README.md` covers setup, rename, and Firebase file placement in more detail.
 
-## Project Overview
+## Auth
 
-Full-stack React Native boilerplate using:
-- **Expo SDK 55** with Expo Router (file-based routing)
-- **FastAPI** backend (or Bun/Hono alternative) with JWT authentication
-- **HeroUI Native** component library + **Uniwind** (Tailwind CSS v4)
-- **Zustand** state management with **MMKV** persistence
-- **RevenueCat** for in-app purchases (optional)
-- **AI Chat** via streaming SSE from OpenRouter/Claude
+- **Backend:** [FastAPI Users](https://fastapi-users.github.io/fastapi-users/) style API: `POST` login/register, `GET /api/v1/users/me` with **JWT** bearer auth.
+- **Client:** Access token in **MMKV** (`@lib/storage`, `StorageKeys.ACCESS_TOKEN`). **Zustand** store: `@stores/auth.zustand` (`useAuthManage`) holds session, `initialize()` on app start, `signOut` on 401.
+- **HTTP:** `@api/client` `apiClient` injects `Authorization: Bearer <token>` for all requests except `noAuth: true`.
+- There is **no** Better Auth in this app path; the contract is **JWT to FastAPI** (or a compatible Hono stack).
 
-## Architecture
+## Folder layout (current)
 
-### Auth Flow
-```
-App Start → authStore.initialize()
-  → setUnauthorizedHandler(signOut)    ← auto-logout on 401
-  → check MMKV for token → fetch /users/me
-  ├─ Token valid → isLogin=true → show (tabs)
-  ├─ Token invalid → clear token → isLogin=false → show (auth)
-  └─ No token → isLogin=false → show (auth)
-```
+| Area | Path | Notes |
+|------|------|--------|
+| Routes (expo-router) | `src/app/` | File-based screens and layouts. |
+| UI | `src/components/` | Shared components, providers, forms. |
+| Hooks | `src/hooks/` | e.g. `usePermission`, `useNotifications`, query/network helpers. |
+| API | `src/api/` | `client.ts`, `auth.ts`, `profile.ts`, `push.ts`, feature modules. |
+| App libraries | `src/lib/` | `react-query.tsx`, `storage.ts`, `notifications.ts`, `firebase.ts` — not “React components”. |
+| State | `src/stores/` | Zustand (auth, etc.). |
+| Config | `src/config/` | `api.ts` (base URL from `expo.extra`), env-shaped constants. |
+| i18n | `src/i18n` | import `@i18n` first in root layout (side effects). |
 
-### Chat Flow
-```
-User sends message → chatStore.sendMessage(text)
-  → append userMessage + empty assistantMessage to state
-  → streamChat(history) → streamFetch("/chat/stream", …)
-  → async generator yields plain-text chunks
-  → each chunk appended to assistantMessage content in real-time
-  → isStreaming=false when done
-```
+**Removed / do not reintroduce:** `src/services/`, `src/screens/` (legacy Cashory layout). New code uses **`api/`** + **`lib/`** + `app` routes.
 
-### Onboarding Flow
-```
-App Start → check MMKV for ONBOARDING_DONE
-  ├─ Not done → /onboarding → [Welcome → Setup] → mark done → (auth)
-  └─ Done → auth check
-```
+## Provider tree (root)
 
-### Provider Tree
-```
-GestureHandlerRootView
-  └─ KeyboardProvider
-      └─ RevenueCatProvider
-          └─ OnboardingProvider
-              └─ HeroUINativeProvider
-                  └─ ThemeProviderComponent
-                      └─ App
-```
+In `src/app/_layout.tsx` (simplified, outermost first):
 
-## Key Files
+1. `ReactQueryProvider` (`@lib/react-query`) — **outermost** so the whole app shares TanStack Query.
+2. `AppProvider` — HeroUI, theme, onboarding, RevenueCat, keyboard, **push + permission** bootstrap (`PushNotificationsInit`).
+3. `AppLayout` — auth gate, `Stack` with `Stack.Protected` for auth vs tabs.
 
-| File | Purpose |
-|------|---------|
-| `src/services/api/client.ts` | HTTP client — auto-injects JWT, 401 → signOut callback |
-| `src/services/streamClient.ts` | SSE streaming via fetch + ReadableStream |
-| `src/services/api/auth.ts` | Auth API calls (login, register, forgot password, me) |
-| `src/services/api/profile.ts` | Profile PATCH + avatar upload/delete |
-| `src/services/api/ai.ts` | `streamChat()` wrapper for `/chat/stream` |
-| `src/services/zustand/auth.zustand.ts` | Auth state — signIn, signUp, signOut, initialize, setUser |
-| `src/services/zustand/chat.zustand.ts` | Chat state — messages, isStreaming, sendMessage, clearHistory |
-| `src/services/zustand/profile.zustand.ts` | Profile update + avatar state |
-| `src/utils/storage.ts` | MMKV wrapper — token, onboarding, theme, chat persistence |
-| `src/config/api.ts` | API base URL from `app.json > expo.extra.apiBaseUrl` |
-| `src/contexts/onboarding-context.tsx` | Onboarding state (MMKV) |
-| `src/contexts/revenuecat-context.tsx` | RevenueCat provider (graceful no-key fallback) |
-| `src/app/_layout.tsx` | Root layout — auth init, onboarding redirect, route guards |
+## Forms
 
-## Route Structure
+**TanStack Form + Zod** only. `FormInput` / `FormButton` in `@components/form/` use the field API. **No** React Hook Form in this project.
 
-```
-app/
-├── _layout.tsx                ← root stack (onboarding / auth / tabs / profile)
-├── (auth)/
-│   ├── login.tsx
-│   ├── signup.tsx
-│   └── forgot-password.tsx
-├── (tabs)/
-│   ├── index.tsx              ← Home
-│   ├── chat.tsx               ← AI Chat
-│   ├── profile.tsx            ← Profile
-│   └── settings.tsx           ← Settings
-├── onboarding/
-│   ├── index.tsx              ← Welcome slide
-│   └── setup.tsx              ← Stack features slide
-└── profile/
-    └── edit.tsx               ← Edit Profile (modal-style)
-```
+## Permissions
 
-## API Endpoints
+- Packages: `react-native-permission-handler` (UX/state machine) + `react-native-permissions` (native engine). Config via Expo plugin in `app.json` and iOS `setup_permissions` / Android manifest as per upstream docs.
+- **Hooks** (`@hooks/usePermission.ts`): `useCameraPermission`, `useNotificationPermission` — built on `usePermissionHandler` with the **object** config and `Permissions` from `react-native-permission-handler/rnp`. Web uses a **noop** engine; notifications on native can use `createRNPEngine({ normalizeAndroid: true })` for `POST_NOTIFICATIONS` quirks.
+- **Bootstrap:** `PushNotificationsInit` in `AppProvider` calls `useNotificationPermission()` and passes the result to `useNotifications(permission)` so there is a **single** permission state machine (do not double-mount the hook).
 
-### Authentication (FastAPI defaults)
-| Method | Endpoint | Content-Type | Notes |
-|--------|----------|--------------|-------|
-| POST | `/api/v1/auth/jwt/login` | `application/x-www-form-urlencoded` | `username` field = email |
-| POST | `/api/v1/auth/register` | JSON | `{ email, password, name? }` |
-| POST | `/api/v1/auth/forgot-password` | JSON | `{ email }` |
-| GET  | `/api/v1/users/me` | — | Bearer token |
-| PATCH | `/api/v1/users/me` | JSON | Profile fields |
-| POST | `/api/v1/users/profile/image` | multipart | Avatar upload |
-| DELETE | `/api/v1/users/profile/image` | — | Delete avatar |
-| POST | `/api/v1/chat/stream` | JSON | `{ messages: [{role, content}] }` → text/plain stream |
+## Notifications
 
-### Hono Login Difference
-Hono's `/auth/jwt/login` accepts JSON `{ email, password }` (not form-encoded).
-Update `loginAPI` in `auth.ts` when using the Hono backend.
+- **Remote:** FCM via `@react-native-firebase/messaging`. Foreground: `messaging().onMessage` → local display with **react-native-notify-kit** (`src/lib/notifications.ts`: channels + `displayLocalNotification`).
+- **Hook:** `useNotifications(permission)` — registers channels, subscribes to `onMessage` when permission is **granted**, syncs FCM `getToken` to the backend when **signed in** + **granted**; iOS uses `registerDeviceForRemoteMessages()` before `getToken`. **Web:** no-ops.
+- **Backend:** `POST /api/v1/users/me/push-token` with JSON `{ "token": "<fcm>" }` — **204** on success. Implemented in **fastapi-boilerplate-backend** and **bun-hono-backend-boiplerplate**. Token is **not** returned on `GET /users/me` (treat as secret).
+- **iOS:** APNs key in Firebase, Xcode capabilities **Push Notifications** + **Background Modes → Remote notifications**, then dev build (not Expo Go). See `README.md` for plist / `google-services` placement.
 
-## Conventions
+## Firebase (`src/lib/firebase.ts`)
 
-- **Path aliases**: `@components/`, `@services/`, `@config/`, `@utils/`, `@contexts/`, `@screens/`, `@hooks/`
-- **Styling**: Uniwind className (Tailwind CSS v4 syntax)
-- **Components**: HeroUI Native (import from `heroui-native/button`, etc.)
-- **Forms**: `@tanstack/react-form` + Zod validation
-- **State**: Zustand stores in `src/services/zustand/`
-- **Storage**: MMKV via `src/utils/storage.ts` (not AsyncStorage)
-- **Streaming**: `streamFetch()` from `src/services/streamClient.ts` (requires RN new arch)
+- **`initFirebase()`** at module load in `_layout` (after `@i18n`): Crashlytics collection **off in `__DEV__`**, on iOS/Android only.
+- **Crashlytics:** `logError(error, context?)`, **Performance:** `traceHttpRequest(url, method)` (returns metric; caller stops after response) — **web** gets a no-op metric.
+- **Analytics:** `track.screen`, `track.event`, `track.login`, `track.signUp` — no-op on **web**.
+- **Config files:** per-app `GoogleService-Info.plist` and `google-services.json` after Firebase Console setup (not committed in the generic boilerplate). See `README.md`.
 
-## Common Gotchas
+## Metro
 
-1. **Login form-encoded**: FastAPI login uses `username` field (email value) with `application/x-www-form-urlencoded`.
-2. **MMKV requires native rebuild**: After first install, run `expo prebuild --clean && expo run:ios`.
-3. **RevenueCat skips init if no API key** — won't crash in dev; logs a warning.
-4. **Streaming requires new arch**: `newArchEnabled: true` in app.json (already set).
-5. **401 auto-logout**: Any 401 response triggers `signOut()` via the `setUnauthorizedHandler` callback registered in `authStore.initialize()`.
-6. **CLI has its own node_modules**: Run `npm install` inside `cli/` separately.
+- `metro.config.js`: **`wrapWithReanimatedMetroConfig(withUniwindConfig(...))`** — Reanimated 4.2+ symbolicator **outside** Uniwind (not `withReanimatedConfig`).
+
+## Native / dev builds
+
+Firebase, MMKV, push, and some permission flows require a **development build** (`expo run:ios` / `expo run:android` or EAS), **not** Expo Go. See `README.md` for details.
+
+## Related docs
+
+- `docs/cashory-alignment-plan.md` — historical migration plan from the Cashory app layout.
+- `README.md` — install, `rename-app`, Firebase files, EAS, scripts.

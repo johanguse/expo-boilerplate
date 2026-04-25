@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { UserProfile } from "./auth";
+import { getCurrentUser, type UserProfile } from "./auth";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -29,7 +29,9 @@ export async function updateProfileAPI(
  * Upload a new profile avatar image.
  * Sends multipart/form-data to the backend.
  */
-export async function uploadAvatarAPI(fileUri: string): Promise<{ avatar_url: string }> {
+export async function uploadAvatarAPI(
+  fileUri: string
+): Promise<{ avatar_url: string }> {
   const filename = fileUri.split("/").pop() ?? "avatar.jpg";
   const ext = filename.split(".").pop()?.toLowerCase() ?? "jpg";
   const mimeMap: Record<string, string> = {
@@ -58,3 +60,13 @@ export async function uploadAvatarAPI(fileUri: string): Promise<{ avatar_url: st
 export async function deleteAvatarAPI(): Promise<void> {
   return apiClient.delete("/users/profile/image");
 }
+
+/**
+ * Object-style API (optional convenience for query hooks)
+ */
+export const profileApi = {
+  getMe: getCurrentUser,
+  update: updateProfileAPI,
+  uploadAvatar: uploadAvatarAPI,
+  deleteAvatar: deleteAvatarAPI,
+};

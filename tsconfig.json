@@ -3,14 +3,15 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
+      "@/*": ["./src/*"],
       "global.css": ["./global.css"],
-
       "@assets/*": ["./assets/*"],
       "@types/*": ["./src/types/*"],
       "@components/*": ["./src/components/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@screens/*": ["./src/screens/*"],
-      "@services/*": ["./src/services/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@api/*": ["./src/api/*"],
+      "@stores/*": ["./src/stores/*"],
       "@utils/*": ["./src/utils/*"],
       "@config/*": ["./src/config/*"],
       "@contexts/*": ["./src/contexts/*"],

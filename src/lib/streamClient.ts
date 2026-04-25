@@ -1,6 +1,6 @@
 import { API_V1 } from "@config/api";
-import { storage, StorageKeys } from "@utils/storage";
-import { ApiError } from "./api/client";
+import { storage, StorageKeys } from "@lib/storage";
+import { ApiError } from "@api/client";
 
 /**
  * Async generator that streams plain-text chunks from the backend chat endpoint.
@@ -24,7 +24,7 @@ export async function* streamFetch(
     },
     body: JSON.stringify(body),
     // Hint for React Native streaming support
-    // @ts-ignore
+    // @ts-expect-error - RN fetch extension for streaming
     reactNative: { textStreaming: true },
   });
 
@@ -35,9 +35,11 @@ export async function* streamFetch(
   if (!response.ok) {
     let detail = `Request failed (${response.status})`;
     try {
-      const data = await response.json();
+      const data = (await response.json()) as { detail?: string };
       if (data?.detail) detail = data.detail;
-    } catch {}
+    } catch {
+      // ignore
+    }
     throw new ApiError(response.status, detail);
   }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
-import type { Message } from "@services/zustand/chat.zustand";
+import type { Message } from "@stores/chat.zustand";
 
 interface ChatBubbleProps {
   message: Message;

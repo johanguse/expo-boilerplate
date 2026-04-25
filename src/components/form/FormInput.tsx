@@ -1,4 +1,4 @@
-import { createFormHookContexts } from "@tanstack/react-form";
+import type { AnyFieldApi } from "@tanstack/react-form";
 import { Description } from "heroui-native/description";
 import { FieldError } from "heroui-native/field-error";
 import { InputGroup, InputGroupInputProps } from "heroui-native/input-group";
@@ -8,22 +8,35 @@ import { cn } from "heroui-native/utils";
 import { PropsWithChildren } from "react";
 import { FadeInUp } from "react-native-reanimated";
 
-const { useFieldContext } = createFormHookContexts();
-
-interface FormInputProps extends PropsWithChildren<InputGroupInputProps> {
-  label?: string;
-  description?: string;
+function errorText(error: unknown): string {
+  if (typeof error === "string") return error;
+  if (
+    error &&
+    typeof error === "object" &&
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string"
+  ) {
+    return (error as { message: string }).message;
+  }
+  return String(error);
 }
 
+export type FormInputProps = PropsWithChildren<
+  InputGroupInputProps & {
+    field: AnyFieldApi;
+    label?: string;
+    description?: string;
+  }
+>;
+
 export default function FormInput({
+  field,
   label,
   description,
   className,
   children,
   ...inputProps
 }: Readonly<FormInputProps>) {
-  const field = useFieldContext<string>();
-
   return (
     <TextField isInvalid={!field.state.meta.isValid}>
       {label && (
@@ -34,9 +47,9 @@ export default function FormInput({
       <InputGroup className="relative">
         <InputGroup.Input
           placeholder={label}
-          value={field.state.value}
+          value={String(field.state.value ?? "")}
           onBlur={field.handleBlur}
-          onChangeText={field.handleChange}
+          onChangeText={(v) => field.handleChange(v as never)}
           {...inputProps}
           className={cn("", className)}
         />
@@ -44,7 +57,7 @@ export default function FormInput({
       </InputGroup>
       {field.state.meta.errors.map((error, index) => (
         <FieldError
-          key={`${error.message}-${index}`}
+          key={`${errorText(error)}-${index}`}
           animation={
             index === 0
               ? undefined
@@ -54,7 +67,7 @@ export default function FormInput({
                   },
                 }
           }>
-          {error.message}
+          {errorText(error)}
         </FieldError>
       ))}
       {description && <Description>{description}</Description>}

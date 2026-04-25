@@ -1,5 +1,5 @@
 import { API_V1 } from "@config/api";
-import { storage, StorageKeys } from "@utils/storage";
+import { storage, StorageKeys } from "@lib/storage";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -104,12 +104,16 @@ async function request<T>(
   }
 
   if (!response.ok) {
-    const rawDetail = (data as any)?.detail;
+    const rawDetail = (data as { detail?: unknown })?.detail;
     let detail: string;
 
     if (Array.isArray(rawDetail)) {
       // FastAPI validation errors: [{type, loc, msg, input}, ...]
-      detail = rawDetail.map((e: any) => e?.msg ?? String(e)).join(". ");
+      detail = rawDetail
+        .map(
+          (e: { msg?: string }) => e?.msg ?? String(e)
+        )
+        .join(". ");
     } else if (typeof rawDetail === "string") {
       detail = rawDetail;
     } else if (typeof data === "string") {

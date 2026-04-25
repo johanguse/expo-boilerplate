@@ -9,6 +9,10 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import ThemeProviderComponent from "./ThemeProvider";
 import { OnboardingProvider } from "@contexts/onboarding-context";
 import { RevenueCatProvider } from "@contexts/revenuecat-context";
+import { useOnlineManager } from "@hooks/useOnlineManager";
+import { useAppFocusRefetch } from "@hooks/useAppFocusRefetch";
+import { useNotificationPermission } from "@hooks/usePermission";
+import { useNotifications } from "@hooks/useNotifications";
 
 type AppProviderProps = {
   children: React.ReactNode;
@@ -20,13 +24,29 @@ const config: HeroUINativeConfig = {
   },
 };
 
+/**
+ * Notification permission state + FCM token sync (when signed in) + foreground
+ * display via notify-kit. Use `permission.request` from UI when you want the
+ * system permission dialog.
+ */
+function PushNotificationsInit() {
+  const permission = useNotificationPermission();
+  useNotifications(permission);
+  return null;
+}
+
 export default function AppProvider({ children }: Readonly<AppProviderProps>) {
+  // Keep TanStack Query in sync with device network & app focus state
+  useOnlineManager();
+  useAppFocusRefetch();
+
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
         <RevenueCatProvider>
           <OnboardingProvider>
             <HeroUINativeProvider config={config}>
+              <PushNotificationsInit />
               <ThemeProviderComponent>{children}</ThemeProviderComponent>
             </HeroUINativeProvider>
           </OnboardingProvider>

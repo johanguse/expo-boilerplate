@@ -1,7 +1,9 @@
 // i18n must be imported first — side-effect initializes i18next before any screen
 import "@i18n";
+import { initFirebase } from "@lib/firebase";
 import AppProvider from "@components/providers";
-import useAuthManage from "@services/zustand/auth.zustand";
+import { ReactQueryProvider } from "@lib/react-query";
+import useAuthManage from "@stores/auth.zustand";
 import { Redirect, Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -12,6 +14,8 @@ import {
 } from "react-native-reanimated";
 import { useOnboarding } from "@contexts/onboarding-context";
 import { ActivityIndicator, View } from "react-native";
+
+initFirebase();
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -77,8 +81,10 @@ function AppLayout() {
 
 export default function RootLayout() {
   return (
-    <AppProvider>
-      <AppLayout />
-    </AppProvider>
+    <ReactQueryProvider>
+      <AppProvider>
+        <AppLayout />
+      </AppProvider>
+    </ReactQueryProvider>
   );
 }
