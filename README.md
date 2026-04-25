@@ -1,6 +1,6 @@
 # Expo Boilerplate
 
-Full-stack React Native boilerplate with **FastAPI backend** integration, **HeroUI Native**, **Uniwind** (Tailwind CSS v4), onboarding flow, and optional in-app purchases. Includes **React Native Firebase** (Crashlytics, etc.), **expo-notifications**, and **react-native-permissions** via config plugins (native code after prebuild).
+Full-stack React Native boilerplate with **FastAPI** (or compatible) backend, **HeroUI Native**, **Uniwind** (Tailwind CSS v4), onboarding, and optional RevenueCat. Native stack includes **React Native Firebase** (Analytics, Crashlytics, Performance, **FCM Messaging**), **react-native-notify-kit** (local/foreground display), **react-native-permission-handler** + **react-native-permissions**, and **expo-notifications** — all after **prebuild** / dev build, not Expo Go. See **`docs/ai-context.md`** for the full architecture overview.
 
 ## Expo Go vs development builds (and Firebase / permissions)
 
@@ -84,8 +84,9 @@ bun run rename-app -- --help
 - **Uniwind** — Tailwind CSS v4 for React Native
 - **Onboarding** — Multi-step flow with MMKV persistence
 - **RevenueCat** — Paywall and subscriptions (optional)
-- **Firebase** — App, Crashlytics, optional Analytics/Perf/Messaging (native build)
-- **Permissions** — `expo-notifications` + `react-native-permissions` (native build)
+- **Firebase** — `src/lib/firebase.ts`: init in `_layout`, Crashlytics (off in dev), Analytics `track`, Performance `traceHttpRequest` (native build)
+- **Push** — FCM token → `POST /api/v1/users/me/push-token` when signed in; foreground remote messages via notify-kit (`src/lib/notifications.ts`, `useNotifications`)
+- **Permissions** — `react-native-permission-handler` + RNP (`useCameraPermission`, `useNotificationPermission` in `src/hooks/usePermission.ts`)
 - **CLI scaffolder** — Interactive new project / feature selection
 - **TypeScript** — Strict mode, path aliases
 - **TanStack Form** — `useForm` + `form.Field` (no react-hook-form)
@@ -99,11 +100,11 @@ Separation follows a **feature-friendly** layout: routing in `app/`, **API and s
 | Layer | Role |
 |-------|------|
 | **`src/app/`** | Expo Router screens only (auth, tabs, profile, onboarding). No duplicate `screens/` tree. |
-| **`src/api/`** | Typed HTTP: `client.ts` (JWT, 401), `auth.ts`, `profile.ts`, `ai.ts`, `query-keys.ts`. |
+| **`src/api/`** | Typed HTTP: `client.ts` (JWT, 401), `auth.ts`, `profile.ts`, `push.ts` (FCM token), `ai.ts`, `query-keys.ts`. |
 | **`src/stores/`** | Zustand: session (`auth`), AI chat, profile updates synced with `api`. |
-| **`src/lib/`** | Infrastructure: `react-query.tsx` (`ReactQueryProvider` — **mounted in `app/_layout.tsx` outermost**), `storage.ts` (MMKV), `streamClient.ts`, `firebase.ts`, `notifications.ts`. |
+| **`src/lib/`** | Infrastructure: `react-query.tsx` (`ReactQueryProvider` — **outermost in `app/_layout.tsx`**), `storage.ts` (MMKV), `streamClient.ts`, `firebase.ts`, `notifications.ts`. No legacy `services/` or `screens/` trees. |
 | **`src/components/`** | Reusable UI; **`components/form/`** wraps HeroUI with **TanStack Form** field API. |
-| **`src/hooks/`** | Cross-cutting hooks (e.g. TanStack Query profile helper, online/focus). |
+| **`src/hooks/`** | Cross-cutting hooks: e.g. `usePermission` (camera / notifications), `useNotifications`, online/focus refetch, profile helpers. |
 | **`src/config/`** | `api.ts`, `revenuecat.ts`, `firebase.ts` (path hints for native config files). |
 | **`src/contexts/`** | React context: onboarding, RevenueCat. |
 
@@ -128,9 +129,9 @@ There is no **`react-hook-form`** dependency and no `useAppForm` / `createFormHo
 │   │   ├── onboarding/
 │   │   └── providers/           # Theme, gesture/keyboard, RevenueCat, onboarding, HeroUI
 │   ├── contexts/              # onboarding, revenuecat
-│   ├── hooks/                 # useProfileQuery, useOnlineManager, useAppFocusRefetch, …
+│   ├── hooks/                 # usePermission, useNotifications, useOnlineManager, useAppFocusRefetch, …
 │   ├── lib/                   # react-query, storage, streamClient, firebase, notifications
-│   ├── api/                   # client, auth, profile, ai, query-keys
+│   ├── api/                   # client, auth, profile, push, ai, query-keys
 │   ├── stores/                # zustand: auth, chat, profile
 │   ├── config/                # api, revenuecat, firebase (paths)
 │   ├── i18n/
@@ -139,7 +140,7 @@ There is no **`react-hook-form`** dependency and no `useAppForm` / `createFormHo
 ├── scripts/
 │   └── rename-app.ts
 ├── cli/
-├── docs/
+├── docs/                      # ai-context.md, cashory-alignment-plan.md, …
 ├── app.json
 └── package.json
 ```
@@ -188,8 +189,9 @@ The app uses a **FastAPI** backend with `fastapi-users` JWT:
 | `/api/v1/auth/register` | POST | Register (JSON) |
 | `/api/v1/auth/forgot-password` | POST | Reset request |
 | `/api/v1/users/me` | GET | Current user |
+| `/api/v1/users/me/push-token` | POST | JSON `{ "token": "<fcm>" }` — store device token (backend must implement; 204) |
 
-- JWT in MMKV; session restored on launch; 401 triggers sign-out
+- JWT in MMKV; session restored on launch; 401 triggers sign-out. Implement **push-token** on **fastapi-boilerplate-backend** or **bun-hono-backend-boiplerplate** (both boilerplates include the route).
 
 ## Styling (Uniwind)
 
@@ -226,9 +228,12 @@ node dist/index.js [project-name] [--default] [--yes]
 | RevenueCat | `src/config/revenuecat.ts` |
 | Firebase file paths (reference) | `src/config/firebase.ts` |
 | Path aliases | `tsconfig.json` → `paths` (`@api`, `@lib`, `@stores`, …) |
+| AI / dev overview | `docs/ai-context.md` (auth, folders, forms, push, Firebase, Metro) |
+| Metro | `wrapWithReanimatedMetroConfig` + `withUniwindConfig` in `metro.config.js` |
 
 ## Learn more
 
+- In-repo: **`docs/ai-context.md`**
 - [Expo](https://docs.expo.dev/)
 - [Expo Router](https://docs.expo.dev/router/introduction/)
 - [Development builds](https://docs.expo.dev/develop/development-builds/introduction/)
