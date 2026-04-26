@@ -1,17 +1,12 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { REVENUECAT_CONFIG } from "@config/revenuecat";
+import type React from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import Purchases, {
   type CustomerInfo,
   type PurchasesPackage,
 } from "react-native-purchases";
 import RevenueCatUI from "react-native-purchases-ui";
-import { REVENUECAT_CONFIG } from "@config/revenuecat";
 
 type RevenueCatContextType = {
   isInitialized: boolean;
@@ -24,7 +19,7 @@ type RevenueCatContextType = {
 };
 
 const RevenueCatContext = createContext<RevenueCatContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function RevenueCatProvider({
@@ -47,7 +42,9 @@ export function RevenueCatProvider({
 
         if (!apiKey || apiKey.startsWith("your_")) {
           // Skip initialization if no valid API key
-          console.warn("RevenueCat: No valid API key configured. Skipping initialization.");
+          console.warn(
+            "RevenueCat: No valid API key configured. Skipping initialization.",
+          );
           setIsInitialized(true);
           return;
         }
@@ -69,7 +66,7 @@ export function RevenueCatProvider({
         const removeListener = Purchases.addCustomerInfoUpdateListener(
           (info) => {
             setCustomerInfo(info);
-          }
+          },
         );
         listenerRemover.current = removeListener as unknown as () => void;
 
@@ -97,8 +94,9 @@ export function RevenueCatProvider({
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       setCustomerInfo(customerInfo);
-    } catch (e: any) {
-      if (!e.userCancelled) {
+    } catch (e: unknown) {
+      const err = e as { userCancelled?: boolean };
+      if (!err.userCancelled) {
         console.error("Purchase error:", e);
         throw e;
       }
@@ -129,7 +127,8 @@ export function RevenueCatProvider({
         purchasePackage,
         restorePurchases,
         presentPaywall,
-      }}>
+      }}
+    >
       {children}
     </RevenueCatContext.Provider>
   );
@@ -138,9 +137,7 @@ export function RevenueCatProvider({
 export function useRevenueCat() {
   const context = useContext(RevenueCatContext);
   if (context === undefined) {
-    throw new Error(
-      "useRevenueCat must be used within a RevenueCatProvider"
-    );
+    throw new Error("useRevenueCat must be used within a RevenueCatProvider");
   }
   return context;
 }

@@ -1,22 +1,30 @@
-import path from "path";
+import path from "node:path";
 import fs from "fs-extra";
-import fg from "fast-glob";
-import type { FeatureToggleConfig, FileOperation, Modification } from "./types.js";
+import type {
+  FeatureToggleConfig,
+  FileOperation,
+  Modification,
+} from "./types.js";
 
 /**
  * Copy the template directory to the target directory
  */
 export async function copyTemplate(
   templateDir: string,
-  targetDir: string
+  targetDir: string,
 ): Promise<void> {
   await fs.copy(templateDir, targetDir, {
     filter: (src) => {
       const basename = path.basename(src);
       // Skip node_modules, .git, ios, android, .expo
-      return !["node_modules", ".git", "ios", "android", ".expo", "cli"].includes(
-        basename
-      );
+      return ![
+        "node_modules",
+        ".git",
+        "ios",
+        "android",
+        ".expo",
+        "cli",
+      ].includes(basename);
     },
   });
 }
@@ -26,7 +34,7 @@ export async function copyTemplate(
  */
 export async function removeFiles(
   targetDir: string,
-  files: string[]
+  files: string[],
 ): Promise<void> {
   for (const file of files) {
     const fullPath = path.join(targetDir, file);
@@ -41,7 +49,7 @@ export async function removeFiles(
  */
 export async function applyFeatureToggles(
   targetDir: string,
-  configs: FeatureToggleConfig[]
+  configs: FeatureToggleConfig[],
 ): Promise<void> {
   for (const config of configs) {
     // Remove dependencies from package.json
@@ -61,7 +69,7 @@ export async function applyFeatureToggles(
     if (config.providersToRemove.length > 0) {
       const providersPath = path.join(
         targetDir,
-        "src/components/providers/index.tsx"
+        "src/components/providers/index.tsx",
       );
       if (await fs.exists(providersPath)) {
         let content = await fs.readFile(providersPath, "utf-8");
@@ -69,18 +77,12 @@ export async function applyFeatureToggles(
           // Remove import line
           const importRegex = new RegExp(
             `import.*${provider}.*from.*;\n?`,
-            "g"
+            "g",
           );
           content = content.replace(importRegex, "");
           // Remove provider wrapper (opening and closing tags)
-          const openTagRegex = new RegExp(
-            `\\s*<${provider}>\\s*\n?`,
-            "g"
-          );
-          const closeTagRegex = new RegExp(
-            `\\s*</${provider}>\\s*\n?`,
-            "g"
-          );
+          const openTagRegex = new RegExp(`\\s*<${provider}>\\s*\n?`, "g");
+          const closeTagRegex = new RegExp(`\\s*</${provider}>\\s*\n?`, "g");
           content = content.replace(openTagRegex, "\n");
           content = content.replace(closeTagRegex, "\n");
         }
@@ -100,7 +102,7 @@ export async function applyFeatureToggles(
  */
 export async function modifyFile(
   targetDir: string,
-  operation: FileOperation
+  operation: FileOperation,
 ): Promise<void> {
   const filePath = path.join(targetDir, operation.path);
   if (!(await fs.exists(filePath))) return;
@@ -116,7 +118,9 @@ export async function modifyFile(
 
 function applyModification(content: string, mod: Modification): string {
   const pattern =
-    typeof mod.pattern === "string" ? new RegExp(escapeRegex(mod.pattern), "g") : mod.pattern;
+    typeof mod.pattern === "string"
+      ? new RegExp(escapeRegex(mod.pattern), "g")
+      : mod.pattern;
 
   switch (mod.type) {
     case "remove-line":
@@ -124,9 +128,7 @@ function applyModification(content: string, mod: Modification): string {
     case "remove-call": {
       // Remove the entire line containing the pattern
       const lines = content.split("\n");
-      return lines
-        .filter((line) => !pattern.test(line))
-        .join("\n");
+      return lines.filter((line) => !pattern.test(line)).join("\n");
     }
     case "remove-provider": {
       return content.replace(pattern, (match) => {

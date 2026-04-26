@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 
 /**
  * Outermost app shell (see `src/app/_layout.tsx`). Keeps a single `QueryClient`
@@ -20,7 +20,9 @@ export function ReactQueryProvider({ children }: Props) {
           },
           mutations: { retry: 0 },
         },
-      })
+      }),
   );
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 }

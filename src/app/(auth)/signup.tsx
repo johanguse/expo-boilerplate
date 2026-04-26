@@ -5,11 +5,11 @@ import FormInput from "@components/form/FormInput";
 import { useTranslation } from "@i18n";
 import useAuthManage from "@stores/auth.zustand";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "expo-router";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -23,7 +23,10 @@ import { z } from "zod";
 const signupSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().min(1, "Email is required").email("Invalid email address"),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
@@ -78,7 +81,11 @@ export default function Signup() {
           style={{ paddingTop: insets.top + 40 }}
         >
           <View className="size-16 bg-primary rounded-2xl items-center justify-center mb-5 shadow-lg">
-            <SIonicons size={32} name="rocket" className="text-primary-foreground" />
+            <SIonicons
+              size={32}
+              name="rocket"
+              className="text-primary-foreground"
+            />
           </View>
           <Text className="text-2xl font-bold text-default-foreground">
             {t("auth.signup.title")}
@@ -91,9 +98,17 @@ export default function Signup() {
         <View className="px-6 gap-y-3">
           <form.Field name="name">
             {(field) => (
-              <FormInput field={field} label={t("auth.signup.fullName")} autoCapitalize="words">
+              <FormInput
+                field={field}
+                label={t("auth.signup.fullName")}
+                autoCapitalize="words"
+              >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons size={18} name="person-outline" className="text-default-400" />
+                  <SIonicons
+                    size={18}
+                    name="person-outline"
+                    className="text-default-400"
+                  />
                 </InputGroup.Prefix>
               </FormInput>
             )}
@@ -108,7 +123,11 @@ export default function Signup() {
                 keyboardType="email-address"
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons size={18} name="mail-outline" className="text-default-400" />
+                  <SIonicons
+                    size={18}
+                    name="mail-outline"
+                    className="text-default-400"
+                  />
                 </InputGroup.Prefix>
               </FormInput>
             )}
@@ -123,11 +142,24 @@ export default function Signup() {
                 secureTextEntry={!showPass}
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons size={18} name="lock-closed-outline" className="text-default-400" />
+                  <SIonicons
+                    size={18}
+                    name="lock-closed-outline"
+                    className="text-default-400"
+                  />
                 </InputGroup.Prefix>
                 <InputGroup.Suffix>
-                  <Button isIconOnly size="sm" variant="ghost" onPress={() => setShowPass(!showPass)}>
-                    <SIonicons size={18} name={showPass ? "eye" : "eye-off"} className="text-default-400" />
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="ghost"
+                    onPress={() => setShowPass(!showPass)}
+                  >
+                    <SIonicons
+                      size={18}
+                      name={showPass ? "eye" : "eye-off"}
+                      className="text-default-400"
+                    />
                   </Button>
                 </InputGroup.Suffix>
               </FormInput>
@@ -143,11 +175,24 @@ export default function Signup() {
                 secureTextEntry={!showConfirmPass}
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons size={18} name="lock-closed-outline" className="text-default-400" />
+                  <SIonicons
+                    size={18}
+                    name="lock-closed-outline"
+                    className="text-default-400"
+                  />
                 </InputGroup.Prefix>
                 <InputGroup.Suffix>
-                  <Button isIconOnly size="sm" variant="ghost" onPress={() => setShowConfirmPass(!showConfirmPass)}>
-                    <SIonicons size={18} name={showConfirmPass ? "eye" : "eye-off"} className="text-default-400" />
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="ghost"
+                    onPress={() => setShowConfirmPass(!showConfirmPass)}
+                  >
+                    <SIonicons
+                      size={18}
+                      name={showConfirmPass ? "eye" : "eye-off"}
+                      className="text-default-400"
+                    />
                   </Button>
                 </InputGroup.Suffix>
               </FormInput>
@@ -166,7 +211,9 @@ export default function Signup() {
         </View>
 
         <View className="flex-row justify-center items-center mt-4 pb-8 gap-x-1">
-          <Text className="text-default-500 text-sm">{t("auth.signup.hasAccount")}</Text>
+          <Text className="text-default-500 text-sm">
+            {t("auth.signup.hasAccount")}
+          </Text>
           <Button variant="ghost" size="sm" onPress={() => router.back()}>
             <Button.Label className="text-primary font-semibold text-sm">
               {t("auth.signup.signIn")}

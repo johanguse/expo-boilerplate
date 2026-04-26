@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface StepHeaderProps {
@@ -12,7 +12,8 @@ export function StepHeader({ currentStep, totalSteps }: StepHeaderProps) {
   return (
     <View
       className="flex-row gap-x-2 px-6 pb-2"
-      style={{ paddingTop: insets.top + 16 }}>
+      style={{ paddingTop: insets.top + 16 }}
+    >
       {Array.from({ length: totalSteps }).map((_, index) => (
         <View
           key={index}

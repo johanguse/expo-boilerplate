@@ -26,8 +26,5 @@
     "expo-env.d.ts",
     "src/types/**/*.ts"
   ],
-  "exclude": [
-    "cli/**",
-    "node_modules/**"
-  ]
+  "exclude": ["cli/**", "node_modules/**"]
 }

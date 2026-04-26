@@ -1,7 +1,7 @@
 import { useLoadingAsync } from "@hooks/loading.async";
-import { Button, ButtonRootProps } from "heroui-native/button";
+import { Button, type ButtonRootProps } from "heroui-native/button";
 import { Spinner } from "heroui-native/spinner";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { FadeIn } from "react-native-reanimated";
 
 export type ActionButtonProps = PropsWithChildren<ButtonRootProps> & {
@@ -23,7 +23,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     <Button
       onPress={handlePress}
       isDisabled={isPending || isLoading || isSubmitting}
-      {...props}>
+      {...props}
+    >
       {isPending || isLoading || isSubmitting ? (
         <>
           <Spinner entering={FadeIn.delay(50)} size="sm" color="white" />

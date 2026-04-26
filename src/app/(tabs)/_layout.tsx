@@ -1,6 +1,5 @@
 import { SIonicons } from "@components/common/Icons";
 import { Tabs } from "expo-router";
-import React from "react";
 
 export default function TabLayout() {
   return (
@@ -46,10 +45,7 @@ export default function TabLayout() {
         }}
       />
       {/* Hide the old explore tab from the tab bar */}
-      <Tabs.Screen
-        name="explore"
-        options={{ href: null }}
-      />
+      <Tabs.Screen name="explore" options={{ href: null }} />
     </Tabs>
   );
 }

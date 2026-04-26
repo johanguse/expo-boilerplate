@@ -1,5 +1,5 @@
-import { apiClient } from "./client";
 import { getCurrentUser, type UserProfile } from "./auth";
+import { apiClient } from "./client";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ export interface UpdateProfilePayload {
  * Update the current user's profile.
  */
 export async function updateProfileAPI(
-  payload: UpdateProfilePayload
+  payload: UpdateProfilePayload,
 ): Promise<UserProfile> {
   return apiClient.patch<UserProfile>("/users/me", payload);
 }
@@ -30,7 +30,7 @@ export async function updateProfileAPI(
  * Sends multipart/form-data to the backend.
  */
 export async function uploadAvatarAPI(
-  fileUri: string
+  fileUri: string,
 ): Promise<{ avatar_url: string }> {
   const filename = fileUri.split("/").pop() ?? "avatar.jpg";
   const ext = filename.split(".").pop()?.toLowerCase() ?? "jpg";
@@ -49,9 +49,13 @@ export async function uploadAvatarAPI(
     type: mime,
   } as unknown as Blob);
 
-  return apiClient.post<{ avatar_url: string }>("/users/profile/image", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  return apiClient.post<{ avatar_url: string }>(
+    "/users/profile/image",
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
 }
 
 /**

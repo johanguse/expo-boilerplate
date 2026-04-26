@@ -1,5 +1,5 @@
-import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import React from "react";
 
 /**
  * Refetch all active stale queries when a React Navigation screen

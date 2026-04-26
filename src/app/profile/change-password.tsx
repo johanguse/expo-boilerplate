@@ -1,13 +1,13 @@
+import { changePasswordAPI } from "@api/auth";
 import { SIonicons } from "@components/common/Icons";
 import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
 import { useTranslation } from "@i18n";
-import { changePasswordAPI } from "@api/auth";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "expo-router";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -61,7 +61,8 @@ export default function ChangePassword() {
         toast.show({
           label: t("changePassword.errorTitle"),
           variant: "danger",
-          description: e?.detail ?? e?.message ?? t("changePassword.errorTitle"),
+          description:
+            e?.detail ?? e?.message ?? t("changePassword.errorTitle"),
         });
       }
     },
@@ -76,8 +77,17 @@ export default function ChangePassword() {
         className="flex-row items-center gap-x-3 px-4 border-b border-default-100"
         style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}
       >
-        <Button isIconOnly variant="ghost" size="sm" onPress={() => router.back()}>
-          <SIonicons size={20} name="arrow-back" className="text-default-foreground" />
+        <Button
+          isIconOnly
+          variant="ghost"
+          size="sm"
+          onPress={() => router.back()}
+        >
+          <SIonicons
+            size={20}
+            name="arrow-back"
+            className="text-default-foreground"
+          />
         </Button>
         <Text className="text-lg font-semibold text-default-foreground flex-1">
           {t("changePassword.title")}
@@ -93,9 +103,14 @@ export default function ChangePassword() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="flex-row items-start gap-x-3 p-4 bg-primary/5 rounded-2xl border border-primary/10 mb-2">
-          <SIonicons size={18} name="information-circle-outline" className="text-primary mt-0.5" />
+          <SIonicons
+            size={18}
+            name="information-circle-outline"
+            className="text-primary mt-0.5"
+          />
           <Text className="flex-1 text-sm text-default-600 leading-relaxed">
-            Use at least 8 characters. After updating, you will remain signed in on this device.
+            Use at least 8 characters. After updating, you will remain signed in
+            on this device.
           </Text>
         </View>
 
@@ -112,7 +127,11 @@ export default function ChangePassword() {
               secureTextEntry={!showCurrent}
             >
               <InputGroup.Prefix isDecorative>
-                <SIonicons size={18} name="lock-closed-outline" className="text-default-400" />
+                <SIonicons
+                  size={18}
+                  name="lock-closed-outline"
+                  className="text-default-400"
+                />
               </InputGroup.Prefix>
               <InputGroup.Suffix>
                 <Button
@@ -145,7 +164,11 @@ export default function ChangePassword() {
               secureTextEntry={!showNew}
             >
               <InputGroup.Prefix isDecorative>
-                <SIonicons size={18} name="key-outline" className="text-default-400" />
+                <SIonicons
+                  size={18}
+                  name="key-outline"
+                  className="text-default-400"
+                />
               </InputGroup.Prefix>
               <InputGroup.Suffix>
                 <Button
@@ -174,7 +197,11 @@ export default function ChangePassword() {
               secureTextEntry={!showConfirm}
             >
               <InputGroup.Prefix isDecorative>
-                <SIonicons size={18} name="key-outline" className="text-default-400" />
+                <SIonicons
+                  size={18}
+                  name="key-outline"
+                  className="text-default-400"
+                />
               </InputGroup.Prefix>
               <InputGroup.Suffix>
                 <Button

@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { AppState, Platform } from "react-native";
-import type { AppStateStatus } from "react-native";
 import { focusManager } from "@tanstack/react-query";
+import { useEffect } from "react";
+import type { AppStateStatus } from "react-native";
+import { AppState, Platform } from "react-native";
 
 /**
  * Tells TanStack Query when the app returns to the foreground so it

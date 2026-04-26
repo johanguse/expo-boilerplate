@@ -2,7 +2,7 @@
  * Typing dots only (no body copy). Bubble text uses expo-pretext in ChatBubble;
  * no pretext components needed here.
  */
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Animated, View } from "react-native";
 
 function Dot({ delay }: { delay: number }) {
@@ -23,7 +23,7 @@ function Dot({ delay }: { delay: number }) {
           useNativeDriver: true,
         }),
         Animated.delay(600 - delay),
-      ])
+      ]),
     );
     anim.start();
     return () => anim.stop();

@@ -1,10 +1,10 @@
-import { create } from "zustand";
 import {
-  updateProfileAPI,
-  uploadAvatarAPI,
   deleteAvatarAPI,
   type UpdateProfilePayload,
+  updateProfileAPI,
+  uploadAvatarAPI,
 } from "@api/profile";
+import { create } from "zustand";
 import useAuthManage from "./auth.zustand";
 
 type ProfileState = {

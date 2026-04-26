@@ -1,14 +1,13 @@
+import { forgotPasswordAPI } from "@api/auth";
 import { SIonicons } from "@components/common/Icons";
 import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
 import { useTranslation } from "@i18n";
-import { forgotPasswordAPI } from "@api/auth";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "expo-router";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
-import { useRouter } from "expo-router";
-import React from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -57,8 +56,17 @@ export default function ForgotPassword() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={{ paddingTop: insets.top + 12 }} className="px-4">
-          <Button isIconOnly variant="ghost" size="sm" onPress={() => router.back()}>
-            <SIonicons size={22} name="arrow-back" className="text-default-foreground" />
+          <Button
+            isIconOnly
+            variant="ghost"
+            size="sm"
+            onPress={() => router.back()}
+          >
+            <SIonicons
+              size={22}
+              name="arrow-back"
+              className="text-default-foreground"
+            />
           </Button>
         </View>
 
@@ -84,7 +92,11 @@ export default function ForgotPassword() {
                 keyboardType="email-address"
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons size={18} name="mail-outline" className="text-default-400" />
+                  <SIonicons
+                    size={18}
+                    name="mail-outline"
+                    className="text-default-400"
+                  />
                 </InputGroup.Prefix>
               </FormInput>
             )}
@@ -96,7 +108,9 @@ export default function ForgotPassword() {
         </View>
 
         <View className="flex-row justify-center items-center mt-6 gap-x-1">
-          <Text className="text-default-500 text-sm">{t("auth.forgotPassword.remembered")}</Text>
+          <Text className="text-default-500 text-sm">
+            {t("auth.forgotPassword.remembered")}
+          </Text>
           <Button variant="ghost" size="sm" onPress={() => router.back()}>
             <Button.Label className="text-primary font-semibold text-sm">
               {t("auth.forgotPassword.backToSignIn")}

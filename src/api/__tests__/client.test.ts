@@ -27,7 +27,7 @@ jest.mock("@config/api", () => ({
   API_V1: "http://test-api.local/api/v1",
 }));
 
-import { apiClient, ApiError } from "@api/client";
+import { ApiError, apiClient } from "@api/client";
 import { storage } from "@lib/storage";
 
 const mockFetch = jest.fn();
@@ -56,7 +56,7 @@ describe("apiClient", () => {
           headers: expect.objectContaining({
             Authorization: "Bearer test-jwt-token",
           }),
-        })
+        }),
       );
       expect(result).toEqual({ id: 1, name: "Test User" });
     });
@@ -77,7 +77,7 @@ describe("apiClient", () => {
           headers: expect.not.objectContaining({
             Authorization: expect.any(String),
           }),
-        })
+        }),
       );
     });
 
@@ -121,7 +121,7 @@ describe("apiClient", () => {
             email: "test@test.com",
             password: "password123",
           }),
-        })
+        }),
       );
     });
 
@@ -148,7 +148,7 @@ describe("apiClient", () => {
           headers: expect.objectContaining({
             "Content-Type": "application/x-www-form-urlencoded",
           }),
-        })
+        }),
       );
       expect(result).toEqual({
         access_token: "jwt123",
@@ -167,10 +167,10 @@ describe("apiClient", () => {
       });
 
       await expect(
-        apiClient.post("/auth/jwt/login", undefined, { noAuth: true })
+        apiClient.post("/auth/jwt/login", undefined, { noAuth: true }),
       ).rejects.toThrow(ApiError);
       await expect(
-        apiClient.post("/auth/jwt/login", undefined, { noAuth: true })
+        apiClient.post("/auth/jwt/login", undefined, { noAuth: true }),
       ).rejects.toMatchObject({
         status: 401,
         detail: "Invalid email or password.",

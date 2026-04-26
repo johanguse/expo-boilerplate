@@ -27,7 +27,7 @@ describe("Token Generation", () => {
   it("should handle hyphenated names for display name", () => {
     const tokens = generateTokenMap(
       "super-mega-app",
-      "com.example.supermegaapp"
+      "com.example.supermegaapp",
     );
 
     expect(tokens.displayName).toBe("Super Mega App");

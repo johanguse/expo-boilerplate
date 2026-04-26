@@ -1,4 +1,4 @@
-import { SIonicons } from "@components/common/Icons";
+import { SIonicons, type SIoniconsName } from "@components/common/Icons";
 import { useTranslation } from "@i18n";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -48,7 +48,11 @@ export default function SetupScreen() {
   return (
     <ScrollView
       className="flex-1 bg-background"
-      contentContainerStyle={{ paddingTop: insets.top + 24, paddingHorizontal: 24, paddingBottom: 32 }}
+      contentContainerStyle={{
+        paddingTop: insets.top + 24,
+        paddingHorizontal: 24,
+        paddingBottom: 32,
+      }}
       showsVerticalScrollIndicator={false}
     >
       <Text className="text-3xl font-bold text-default-foreground mb-2">
@@ -64,8 +68,14 @@ export default function SetupScreen() {
             key={item.title}
             className="flex-row items-center gap-x-4 p-4 bg-default-50 rounded-2xl border border-default-100"
           >
-            <View className={`size-10 ${item.color} rounded-xl items-center justify-center`}>
-              <SIonicons size={20} name={item.icon as any} className={item.iconColor} />
+            <View
+              className={`size-10 ${item.color} rounded-xl items-center justify-center`}
+            >
+              <SIonicons
+                size={20}
+                name={item.icon as SIoniconsName}
+                className={item.iconColor}
+              />
             </View>
             <View className="flex-1">
               <Text className="text-default-foreground font-semibold text-sm">

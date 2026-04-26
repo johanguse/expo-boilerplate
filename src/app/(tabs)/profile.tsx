@@ -1,10 +1,9 @@
 import { SIonicons } from "@components/common/Icons";
 import { useTranslation } from "@i18n";
 import useAuthManage from "@stores/auth.zustand";
-import { Card } from "heroui-native/card";
-import { Href, useRouter } from "expo-router";
 import { Image } from "expo-image";
-import React from "react";
+import { type Href, useRouter } from "expo-router";
+import { Card } from "heroui-native/card";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -24,8 +23,13 @@ export default function Profile() {
   const { t } = useTranslation();
 
   const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-    : user?.email?.slice(0, 2).toUpperCase() ?? "?";
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : (user?.email?.slice(0, 2).toUpperCase() ?? "?");
 
   const hasExtraInfo =
     user?.company || user?.phone || user?.country || user?.bio || user?.website;
@@ -39,13 +43,21 @@ export default function Profile() {
         className="px-4 pb-4 flex-row items-center justify-between"
         style={{ paddingTop: insets.top + 16 }}
       >
-        <Text className="text-2xl font-bold text-default-foreground">{t("profile.title")}</Text>
+        <Text className="text-2xl font-bold text-default-foreground">
+          {t("profile.title")}
+        </Text>
         <Pressable
           onPress={() => router.push("/profile/edit" as Href)}
           className="flex-row items-center gap-x-1.5 bg-default-100 rounded-full px-3 py-1.5 active:bg-default-200"
         >
-          <SIonicons size={14} name="pencil-outline" className="text-default-600" />
-          <Text className="text-default-600 text-sm font-medium">{t("profile.edit")}</Text>
+          <SIonicons
+            size={14}
+            name="pencil-outline"
+            className="text-default-600"
+          />
+          <Text className="text-default-600 text-sm font-medium">
+            {t("profile.edit")}
+          </Text>
         </Pressable>
       </View>
 
@@ -62,7 +74,9 @@ export default function Profile() {
               style={{ width: 96, height: 96, borderRadius: 48 }}
               className="bg-primary/15 items-center justify-center"
             >
-              <Text className="text-primary text-3xl font-bold">{initials}</Text>
+              <Text className="text-primary text-3xl font-bold">
+                {initials}
+              </Text>
             </View>
           )}
           {user?.is_verified && (
@@ -79,7 +93,9 @@ export default function Profile() {
 
         {user?.role && (
           <View className="bg-primary/10 px-3 py-1 rounded-full mt-3">
-            <Text className="text-primary text-xs font-medium capitalize">{user.role}</Text>
+            <Text className="text-primary text-xs font-medium capitalize">
+              {user.role}
+            </Text>
           </View>
         )}
       </View>
@@ -90,7 +106,9 @@ export default function Profile() {
             <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mb-2">
               {t("profile.about")}
             </Text>
-            <Text className="text-default-foreground text-sm leading-relaxed">{user.bio}</Text>
+            <Text className="text-default-foreground text-sm leading-relaxed">
+              {user.bio}
+            </Text>
           </Card>
         )}
 
@@ -99,11 +117,19 @@ export default function Profile() {
             <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mb-2">
               {t("profile.details")}
             </Text>
-            {user?.company && <InfoRow icon="business-outline" value={user.company} />}
-            {user?.job_title && <InfoRow icon="briefcase-outline" value={user.job_title} />}
+            {user?.company && (
+              <InfoRow icon="business-outline" value={user.company} />
+            )}
+            {user?.job_title && (
+              <InfoRow icon="briefcase-outline" value={user.job_title} />
+            )}
             {user?.phone && <InfoRow icon="call-outline" value={user.phone} />}
-            {user?.country && <InfoRow icon="location-outline" value={user.country} />}
-            {user?.website && <InfoRow icon="globe-outline" value={user.website} />}
+            {user?.country && (
+              <InfoRow icon="location-outline" value={user.country} />
+            )}
+            {user?.website && (
+              <InfoRow icon="globe-outline" value={user.website} />
+            )}
           </Card>
         )}
 
@@ -114,20 +140,36 @@ export default function Profile() {
           <View className="flex-row items-center gap-x-3 py-2">
             <SIonicons
               size={16}
-              name={user?.is_verified ? "shield-checkmark-outline" : "shield-outline"}
+              name={
+                user?.is_verified
+                  ? "shield-checkmark-outline"
+                  : "shield-outline"
+              }
               className={user?.is_verified ? "text-success" : "text-warning"}
             />
             <Text className="text-default-foreground text-sm flex-1">
-              {user?.is_verified ? t("profile.emailVerified") : t("profile.emailNotVerified")}
+              {user?.is_verified
+                ? t("profile.emailVerified")
+                : t("profile.emailNotVerified")}
             </Text>
-            <View className={`px-2 py-0.5 rounded-full ${user?.is_verified ? "bg-success/10" : "bg-warning/10"}`}>
-              <Text className={`text-xs font-medium ${user?.is_verified ? "text-success" : "text-warning"}`}>
-                {user?.is_verified ? t("profile.verified") : t("profile.pending")}
+            <View
+              className={`px-2 py-0.5 rounded-full ${user?.is_verified ? "bg-success/10" : "bg-warning/10"}`}
+            >
+              <Text
+                className={`text-xs font-medium ${user?.is_verified ? "text-success" : "text-warning"}`}
+              >
+                {user?.is_verified
+                  ? t("profile.verified")
+                  : t("profile.pending")}
               </Text>
             </View>
           </View>
           <View className="flex-row items-center gap-x-3 py-2">
-            <SIonicons size={16} name="calendar-outline" className="text-default-400" />
+            <SIonicons
+              size={16}
+              name="calendar-outline"
+              className="text-default-400"
+            />
             <Text className="text-default-foreground text-sm">
               {t("profile.joined")}{" "}
               {user?.created_at

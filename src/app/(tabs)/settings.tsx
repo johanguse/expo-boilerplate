@@ -1,21 +1,15 @@
 import { SIonicons } from "@components/common/Icons";
 import { changeLanguage, supportedLanguages, useTranslation } from "@i18n";
 import useAuthManage from "@stores/auth.zustand";
-import { Card } from "heroui-native/card";
-import { Href, useRouter } from "expo-router";
-import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
-import {
-  Modal,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useUniwind, Uniwind } from "uniwind";
 import Constants from "expo-constants";
+import * as Haptics from "expo-haptics";
+import { type Href, useRouter } from "expo-router";
+import { Card } from "heroui-native/card";
+import type React from "react";
+import { useState } from "react";
+import { Modal, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Uniwind, useUniwind } from "uniwind";
 
 interface SettingsRowProps {
   icon: string;
@@ -57,12 +51,14 @@ function SettingsRow({
       >
         {label}
       </Text>
-      {value && (
-        <Text className="text-sm text-default-400 mr-2">{value}</Text>
-      )}
+      {value && <Text className="text-sm text-default-400 mr-2">{value}</Text>}
       {rightElement}
       {onPress && !rightElement && (
-        <SIonicons size={16} name="chevron-forward" className="text-default-300" />
+        <SIonicons
+          size={16}
+          name="chevron-forward"
+          className="text-default-300"
+        />
       )}
     </Pressable>
   );
@@ -103,7 +99,9 @@ export default function Settings() {
       contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
     >
       <View className="px-4 pb-6" style={{ paddingTop: insets.top + 16 }}>
-        <Text className="text-2xl font-bold text-default-foreground">{t("settings.title")}</Text>
+        <Text className="text-2xl font-bold text-default-foreground">
+          {t("settings.title")}
+        </Text>
       </View>
 
       <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest px-4 mb-2">
@@ -131,7 +129,11 @@ export default function Settings() {
         <SettingsRow
           icon="shield-checkmark-outline"
           label={t("settings.security")}
-          value={user?.is_verified ? t("settings.verified") : t("settings.unverified")}
+          value={
+            user?.is_verified
+              ? t("settings.verified")
+              : t("settings.unverified")
+          }
           onPress={() => router.push("/profile/security" as Href)}
         />
       </Card>
@@ -200,13 +202,19 @@ export default function Settings() {
                   <Text className="text-xl mr-3">{FLAG[lang] ?? "🌐"}</Text>
                   <Text
                     className={`flex-1 text-sm ${
-                      isSelected ? "text-primary font-semibold" : "text-default-foreground"
+                      isSelected
+                        ? "text-primary font-semibold"
+                        : "text-default-foreground"
                     }`}
                   >
                     {t(`languages.${lang}` as "languages.en")}
                   </Text>
                   {isSelected && (
-                    <SIonicons size={16} name="checkmark" className="text-primary" />
+                    <SIonicons
+                      size={16}
+                      name="checkmark"
+                      className="text-primary"
+                    />
                   )}
                 </Pressable>
               );
@@ -221,11 +229,23 @@ export default function Settings() {
         {t("settings.about")}
       </Text>
       <Card className="mx-4 mb-6 overflow-hidden p-0">
-        <SettingsRow icon="information-circle-outline" label={t("settings.version")} value={version} />
+        <SettingsRow
+          icon="information-circle-outline"
+          label={t("settings.version")}
+          value={version}
+        />
         <Divider />
-        <SettingsRow icon="document-text-outline" label={t("settings.privacyPolicy")} onPress={() => {}} />
+        <SettingsRow
+          icon="document-text-outline"
+          label={t("settings.privacyPolicy")}
+          onPress={() => {}}
+        />
         <Divider />
-        <SettingsRow icon="reader-outline" label={t("settings.termsOfService")} onPress={() => {}} />
+        <SettingsRow
+          icon="reader-outline"
+          label={t("settings.termsOfService")}
+          onPress={() => {}}
+        />
       </Card>
 
       <Card className="mx-4 overflow-hidden p-0">

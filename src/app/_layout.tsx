@@ -1,19 +1,19 @@
 // i18n must be imported first — side-effect initializes i18next before any screen
 import "@i18n";
-import { initFirebase } from "@lib/firebase";
 import AppProvider from "@components/providers";
+import { useOnboarding } from "@contexts/onboarding-context";
+import { initFirebase } from "@lib/firebase";
 import { ReactQueryProvider } from "@lib/react-query";
 import useAuthManage from "@stores/auth.zustand";
 import { Redirect, Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
-import { useOnboarding } from "@contexts/onboarding-context";
-import { ActivityIndicator, View } from "react-native";
 
 initFirebase();
 
@@ -53,7 +53,10 @@ function AppLayout() {
 
   // Logged-in users must never sit on onboarding or auth screens —
   // the navigator can fall back there when Stack.Protected unmounts (auth).
-  if (isLogin && (pathname.startsWith("/onboarding") || pathname.startsWith("/(auth)"))) {
+  if (
+    isLogin &&
+    (pathname.startsWith("/onboarding") || pathname.startsWith("/(auth)"))
+  ) {
     return <Redirect href="/(tabs)" />;
   }
 

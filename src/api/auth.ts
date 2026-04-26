@@ -44,7 +44,7 @@ export interface RegisterPayload {
  */
 export async function loginAPI(
   email: string,
-  password: string
+  password: string,
 ): Promise<AuthToken> {
   const form = new URLSearchParams();
   form.append("username", email);
@@ -60,7 +60,7 @@ export async function loginAPI(
  * Register a new user account.
  */
 export async function registerAPI(
-  payload: RegisterPayload
+  payload: RegisterPayload,
 ): Promise<UserProfile> {
   return apiClient.post<UserProfile>("/auth/register", payload, {
     noAuth: true,
@@ -86,7 +86,7 @@ export async function getCurrentUser(): Promise<UserProfile> {
  */
 export async function changePasswordAPI(
   currentPassword: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<{ success: boolean; message: string }> {
   return apiClient.post("/users/me/change-password", {
     current_password: currentPassword,
@@ -98,7 +98,7 @@ export async function changePasswordAPI(
  * Resend email verification to the given address.
  */
 export async function resendVerificationAPI(
-  email: string
+  email: string,
 ): Promise<{ success: boolean; message: string }> {
   return apiClient.post("/resend-verification", { email }, { noAuth: true });
 }

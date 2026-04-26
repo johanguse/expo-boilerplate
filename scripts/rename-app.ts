@@ -9,7 +9,7 @@
  *   bun run scripts/rename-app.ts -- --help
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 /** Run from repository root (`bun run rename-app` / `bun run scripts/rename-app.ts`). */
@@ -116,22 +116,33 @@ function main(): void {
   };
 
   const scheme = args.scheme?.trim() ?? slugToScheme(args.slug);
-  const iosBundle = args.ios?.trim() ?? (appJson.expo.ios as { bundleIdentifier?: string })?.bundleIdentifier;
+  const iosBundle =
+    args.ios?.trim() ??
+    (appJson.expo.ios as { bundleIdentifier?: string })?.bundleIdentifier;
   if (!iosBundle) {
-    console.error("Set --ios or keep a valid app.json with expo.ios.bundleIdentifier.");
+    console.error(
+      "Set --ios or keep a valid app.json with expo.ios.bundleIdentifier.",
+    );
     process.exit(1);
   }
 
-  const androidPackage = args.android?.trim() ?? androidIdFromBundleId(iosBundle);
+  const androidPackage =
+    args.android?.trim() ?? androidIdFromBundleId(iosBundle);
 
   (appJson.expo as { name: string }).name = args.name;
   (appJson.expo as { slug: string }).slug = args.slug;
   (appJson.expo as { scheme: string }).scheme = scheme;
-  (appJson.expo as { ios: { bundleIdentifier: string; supportsTablet?: boolean } }).ios = {
+  (
+    appJson.expo as {
+      ios: { bundleIdentifier: string; supportsTablet?: boolean };
+    }
+  ).ios = {
     ...((appJson.expo.ios as object) ?? {}),
     bundleIdentifier: iosBundle,
   };
-  (appJson.expo as { android: { package: string } & Record<string, unknown> }).android = {
+  (
+    appJson.expo as { android: { package: string } & Record<string, unknown> }
+  ).android = {
     ...((appJson.expo.android as object) ?? {}),
     package: androidPackage,
   };
@@ -141,7 +152,8 @@ function main(): void {
   writeFileSync(appJsonPath, `${JSON.stringify(appJson, null, 2)}\n`, "utf-8");
   writeFileSync(pkgJsonPath, `${JSON.stringify(pkgJson, null, 2)}\n`, "utf-8");
 
-  const hasNative = existsSync(join(root, "ios")) || existsSync(join(root, "android"));
+  const hasNative =
+    existsSync(join(root, "ios")) || existsSync(join(root, "android"));
   console.log("Updated app.json and package.json.");
   console.log({
     name: args.name,
@@ -154,11 +166,11 @@ function main(): void {
   if (hasNative) {
     console.log(
       "\n⚠️  ios/ and/or android/ exist. Remove them, then prebuild, so the new bundle IDs are applied:\n" +
-        "   rm -rf ios android && npx expo prebuild --clean"
+        "   rm -rf ios android && npx expo prebuild --clean",
     );
   } else {
     console.log(
-      "\nNext: add Firebase config files (see README), then: npx expo prebuild --clean"
+      "\nNext: add Firebase config files (see README), then: npx expo prebuild --clean",
     );
   }
 }

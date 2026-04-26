@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { Command } from "commander";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import chalk from "chalk";
-import path from "path";
-import { fileURLToPath } from "url";
-import { runScaffolder } from "./scaffolder.js";
+import { Command } from "commander";
 import { promptUser } from "./prompts.js";
+import { runScaffolder } from "./scaffolder.js";
 import type { Answers } from "./types.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,7 +27,9 @@ const program = new Command();
 
 program
   .name("create-expo-boilerplate")
-  .description("Create a new Expo app from the boilerplate with FastAPI backend")
+  .description(
+    "Create a new Expo app from the boilerplate with FastAPI backend",
+  )
   .version("0.1.0")
   .argument("[project-name]", "Name of the project")
   .option("-d, --default", "Skip prompts and use defaults")
@@ -35,7 +37,7 @@ program
   .action(
     async (
       projectName: string | undefined,
-      options: { default?: boolean; yes?: boolean }
+      options: { default?: boolean; yes?: boolean },
     ) => {
       console.log("");
       console.log(TEXT_ART);
@@ -83,7 +85,7 @@ program
         }
         process.exit(1);
       }
-    }
+    },
   );
 
 function printNextSteps(answers: Answers) {
@@ -114,7 +116,7 @@ function printNextSteps(answers: Answers) {
   if (features.includes("api-backend")) {
     console.log(chalk.yellow("API Backend:"));
     console.log(
-      `   Update ${chalk.white("app.json > expo.extra.apiBaseUrl")} with your API URL`
+      `   Update ${chalk.white("app.json > expo.extra.apiBaseUrl")} with your API URL`,
     );
     console.log("");
   }
@@ -122,7 +124,7 @@ function printNextSteps(answers: Answers) {
   if (features.includes("revenuecat")) {
     console.log(chalk.yellow("RevenueCat setup:"));
     console.log(
-      `   Update API keys in ${chalk.white("src/config/revenuecat.ts")}`
+      `   Update API keys in ${chalk.white("src/config/revenuecat.ts")}`,
     );
     console.log("");
   }

@@ -9,6 +9,9 @@ const FLAG: Record<string, string> = {
   pt: "🇧🇷",
 };
 
+type Lang = (typeof supportedLanguages)[number];
+type LanguageLabelKey = `languages.${Lang}`;
+
 export default function LanguageSwitcher() {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -27,13 +30,9 @@ export default function LanguageSwitcher() {
       >
         <Text className="text-sm">{FLAG[current] ?? "🌐"}</Text>
         <Text className="text-default-600 text-xs font-medium">
-          {t(`languages.${current}` as any)}
+          {t(`languages.${current}` as LanguageLabelKey)}
         </Text>
-        <SIonicons
-          size={12}
-          name="chevron-down"
-          className="text-default-400"
-        />
+        <SIonicons size={12} name="chevron-down" className="text-default-400" />
       </Pressable>
 
       <Modal
@@ -75,7 +74,7 @@ export default function LanguageSwitcher() {
                         : "text-default-foreground"
                     }`}
                   >
-                    {t(`languages.${lang}` as any)}
+                    {t(`languages.${lang}` as LanguageLabelKey)}
                   </Text>
                   {isSelected && (
                     <SIonicons

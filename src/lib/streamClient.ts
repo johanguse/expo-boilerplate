@@ -1,6 +1,6 @@
-import { API_V1 } from "@config/api";
-import { storage, StorageKeys } from "@lib/storage";
 import { ApiError } from "@api/client";
+import { API_V1 } from "@config/api";
+import { StorageKeys, storage } from "@lib/storage";
 
 /**
  * Async generator that streams plain-text chunks from the backend chat endpoint.
@@ -12,7 +12,7 @@ import { ApiError } from "@api/client";
  */
 export async function* streamFetch(
   path: string,
-  body: unknown
+  body: unknown,
 ): AsyncGenerator<string, void, unknown> {
   const token = storage.getString(StorageKeys.ACCESS_TOKEN);
 

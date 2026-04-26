@@ -1,12 +1,12 @@
+import { resendVerificationAPI } from "@api/auth";
 import { SIonicons } from "@components/common/Icons";
 import { useTranslation } from "@i18n";
-import { resendVerificationAPI } from "@api/auth";
 import useAuthManage from "@stores/auth.zustand";
-import { Card } from "heroui-native/card";
-import { Button } from "heroui-native/button";
-import { useToast } from "heroui-native/toast";
-import { Href, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
+import { type Href, useRouter } from "expo-router";
+import { Button } from "heroui-native/button";
+import { Card } from "heroui-native/card";
+import { useToast } from "heroui-native/toast";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -60,7 +60,11 @@ function NavRow({
           <Text className="text-xs text-default-400 mt-0.5">{description}</Text>
         )}
       </View>
-      <SIonicons size={16} name="chevron-forward" className="text-default-300" />
+      <SIonicons
+        size={16}
+        name="chevron-forward"
+        className="text-default-300"
+      />
     </Pressable>
   );
 }
@@ -108,8 +112,17 @@ export default function Security() {
         className="flex-row items-center gap-x-3 px-4 border-b border-default-100"
         style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}
       >
-        <Button isIconOnly variant="ghost" size="sm" onPress={() => router.back()}>
-          <SIonicons size={20} name="arrow-back" className="text-default-foreground" />
+        <Button
+          isIconOnly
+          variant="ghost"
+          size="sm"
+          onPress={() => router.back()}
+        >
+          <SIonicons
+            size={20}
+            name="arrow-back"
+            className="text-default-foreground"
+          />
         </Button>
         <Text className="text-lg font-semibold text-default-foreground flex-1">
           {t("security.title")}
@@ -146,12 +159,16 @@ export default function Security() {
                       user?.is_verified ? "text-success" : "text-warning"
                     }`}
                   >
-                    {user?.is_verified ? t("settings.verified") : t("settings.unverified")}
+                    {user?.is_verified
+                      ? t("settings.verified")
+                      : t("settings.unverified")}
                   </Text>
                 </View>
               </View>
               <Text className="text-xs text-default-400 mt-0.5">
-                {user?.is_verified ? t("security.verifiedDesc") : t("security.unverifiedDesc")}
+                {user?.is_verified
+                  ? t("security.verifiedDesc")
+                  : t("security.unverifiedDesc")}
               </Text>
             </View>
           </View>
@@ -165,7 +182,11 @@ export default function Security() {
                 className="flex-row items-center px-4 py-3.5 active:bg-default-50"
               >
                 <View className="size-8 rounded-xl bg-primary/10 items-center justify-center mr-3">
-                  <SIonicons size={16} name="send-outline" className="text-primary" />
+                  <SIonicons
+                    size={16}
+                    name="send-outline"
+                    className="text-primary"
+                  />
                 </View>
                 <Text className="flex-1 text-sm font-medium text-primary">
                   {sending ? "Sending…" : t("security.resend")}
@@ -189,7 +210,11 @@ export default function Security() {
         <Card className="overflow-hidden p-0 mb-6">
           <View className="flex-row items-center px-4 py-3.5 gap-x-3">
             <View className="size-8 rounded-xl bg-default-100 items-center justify-center">
-              <SIonicons size={16} name="phone-portrait-outline" className="text-default-600" />
+              <SIonicons
+                size={16}
+                name="phone-portrait-outline"
+                className="text-default-600"
+              />
             </View>
             <View className="flex-1">
               <Text className="text-sm font-medium text-default-foreground">

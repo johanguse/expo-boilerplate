@@ -1,13 +1,13 @@
-import { create } from "zustand";
 import {
+  type AuthToken,
+  getCurrentUser,
   loginAPI,
   registerAPI,
-  getCurrentUser,
-  type AuthToken,
   type UserProfile,
 } from "@api/auth";
 import { setUnauthorizedHandler } from "@api/client";
-import { storage, StorageKeys } from "@lib/storage";
+import { StorageKeys, storage } from "@lib/storage";
+import { create } from "zustand";
 
 type AuthState = {
   /** Whether we're checking for a stored session on startup */

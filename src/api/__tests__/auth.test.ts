@@ -21,13 +21,13 @@ jest.mock("@api/client", () => ({
   },
 }));
 
-import { apiClient } from "@api/client";
 import {
-  loginAPI,
-  registerAPI,
   forgotPasswordAPI,
   getCurrentUser,
+  loginAPI,
+  registerAPI,
 } from "@api/auth";
+import { apiClient } from "@api/client";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -47,7 +47,7 @@ describe("Auth API", () => {
         expect.objectContaining({
           noAuth: true,
           formData: expect.any(URLSearchParams),
-        })
+        }),
       );
 
       const formData = (apiClient.post as jest.Mock).mock.calls[0][2]
@@ -82,7 +82,7 @@ describe("Auth API", () => {
           password: "securepass123",
           name: "Test User",
         },
-        { noAuth: true }
+        { noAuth: true },
       );
       expect(result.email).toBe("new@test.com");
     });
@@ -98,7 +98,7 @@ describe("Auth API", () => {
       expect(apiClient.post).toHaveBeenCalledWith(
         "/auth/register",
         { email: "noname@test.com", password: "password" },
-        { noAuth: true }
+        { noAuth: true },
       );
     });
   });
@@ -112,7 +112,7 @@ describe("Auth API", () => {
       expect(apiClient.post).toHaveBeenCalledWith(
         "/auth/forgot-password",
         { email: "forgot@test.com" },
-        { noAuth: true }
+        { noAuth: true },
       );
     });
   });

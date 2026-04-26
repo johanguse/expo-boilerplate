@@ -1,10 +1,10 @@
-import { Stack, usePathname, useRouter } from "expo-router";
-import { View } from "react-native";
-import { useOnboarding } from "@contexts/onboarding-context";
 import { OnboardingButton } from "@components/onboarding/OnboardingButton";
 import { StepHeader } from "@components/onboarding/StepHeader";
+import { useOnboarding } from "@contexts/onboarding-context";
 import { useTranslation } from "@i18n";
 import useAuthManage from "@stores/auth.zustand";
+import { Stack, usePathname, useRouter } from "expo-router";
+import { View } from "react-native";
 
 const TOTAL_STEPS = 2;
 

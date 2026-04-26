@@ -1,16 +1,24 @@
-import React, { useMemo, useState } from "react";
-import { Platform, Pressable, Text, useWindowDimensions, View } from "react-native";
-import { SafeText, TruncatedText, useStreamingLayout } from "expo-pretext";
-import { useThemeColor } from "heroui-native/hooks";
 import { useTranslation } from "@i18n";
 import type { Message } from "@stores/chat.zustand";
+import { SafeText, TruncatedText, useStreamingLayout } from "expo-pretext";
+import { useThemeColor } from "heroui-native/hooks";
+import { useMemo, useState } from "react";
+import {
+  Platform,
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 const CHAT_FONT_SIZE = 14;
 const CHAT_LINE_HEIGHT = 22;
 const PREVIEW_MAX_LINES = 8;
 
 function useChatSystemFont(): string {
-  return Platform.select({ ios: "System", default: "sans-serif" }) ?? "sans-serif";
+  return (
+    Platform.select({ ios: "System", default: "sans-serif" }) ?? "sans-serif"
+  );
 }
 
 function useChatInnerTextWidths() {
@@ -26,7 +34,15 @@ function useChatInnerTextWidths() {
   }, [screenW]);
 }
 
-function UserBubbleText({ content, maxTextWidth, color }: { content: string; maxTextWidth: number; color: string }) {
+function UserBubbleText({
+  content,
+  maxTextWidth,
+  color,
+}: {
+  content: string;
+  maxTextWidth: number;
+  color: string;
+}) {
   const fontFamily = useChatSystemFont();
   const textStyle = useMemo(
     () => ({
@@ -35,7 +51,7 @@ function UserBubbleText({ content, maxTextWidth, color }: { content: string; max
       lineHeight: CHAT_LINE_HEIGHT,
       color,
     }),
-    [fontFamily, color]
+    [fontFamily, color],
   );
 
   return (
@@ -66,16 +82,26 @@ function AssistantBubbleText({
       lineHeight: CHAT_LINE_HEIGHT,
       color,
     }),
-    [fontFamily, color]
+    [fontFamily, color],
   );
 
-  const { height, lineCount } = useStreamingLayout(content, textStyle, maxTextWidth);
+  const { height, lineCount } = useStreamingLayout(
+    content,
+    textStyle,
+    maxTextWidth,
+  );
   const [expanded, setExpanded] = useState(false);
 
-  const showPreview = !isStreaming && !expanded && lineCount > PREVIEW_MAX_LINES;
+  const showPreview =
+    !isStreaming && !expanded && lineCount > PREVIEW_MAX_LINES;
 
   const body = showPreview ? (
-    <TruncatedText style={textStyle} maxWidth={maxTextWidth} maxLines={PREVIEW_MAX_LINES} mode="tail">
+    <TruncatedText
+      style={textStyle}
+      maxWidth={maxTextWidth}
+      maxLines={PREVIEW_MAX_LINES}
+      mode="tail"
+    >
       {content}
     </TruncatedText>
   ) : (
@@ -90,14 +116,22 @@ function AssistantBubbleText({
     <View>
       {body}
       {showPreview && (
-        <Pressable onPress={() => setExpanded(true)} className="pt-1 self-start" hitSlop={8}>
+        <Pressable
+          onPress={() => setExpanded(true)}
+          className="pt-1 self-start"
+          hitSlop={8}
+        >
           <Text className="text-sm font-semibold" style={{ color: linkColor }}>
             {t("chat.readMore")}
           </Text>
         </Pressable>
       )}
       {!isStreaming && expanded && lineCount > PREVIEW_MAX_LINES && (
-        <Pressable onPress={() => setExpanded(false)} className="pt-1 self-start" hitSlop={8}>
+        <Pressable
+          onPress={() => setExpanded(false)}
+          className="pt-1 self-start"
+          hitSlop={8}
+        >
           <Text className="text-sm font-semibold" style={{ color: linkColor }}>
             {t("chat.readLess")}
           </Text>
@@ -113,7 +147,11 @@ interface ChatBubbleProps {
   isStreaming?: boolean;
 }
 
-export default function ChatBubble({ message, isConsecutive = false, isStreaming = false }: ChatBubbleProps) {
+export default function ChatBubble({
+  message,
+  isConsecutive = false,
+  isStreaming = false,
+}: ChatBubbleProps) {
   const { user, assistant } = useChatInnerTextWidths();
   const onAccent = useThemeColor("accent-foreground");
   const onDefault = useThemeColor("default-foreground");
@@ -123,14 +161,20 @@ export default function ChatBubble({ message, isConsecutive = false, isStreaming
     return (
       <View className={`px-4 items-end ${isConsecutive ? "pt-0.5" : "pt-2"}`}>
         <View className="max-w-[80%] bg-primary rounded-2xl rounded-tr-sm px-4 py-3">
-          <UserBubbleText content={message.content} maxTextWidth={user} color={onAccent} />
+          <UserBubbleText
+            content={message.content}
+            maxTextWidth={user}
+            color={onAccent}
+          />
         </View>
       </View>
     );
   }
 
   return (
-    <View className={`px-4 flex-row items-end gap-x-2 ${isConsecutive ? "pt-0.5" : "pt-2"}`}>
+    <View
+      className={`px-4 flex-row items-end gap-x-2 ${isConsecutive ? "pt-0.5" : "pt-2"}`}
+    >
       {!isConsecutive ? (
         <View className="size-7 rounded-full bg-primary/10 items-center justify-center flex-shrink-0 mb-0.5">
           <View className="size-3 bg-primary/50 rounded-full" />

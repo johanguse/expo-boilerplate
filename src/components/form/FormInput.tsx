@@ -1,11 +1,14 @@
 import type { AnyFieldApi } from "@tanstack/react-form";
 import { Description } from "heroui-native/description";
 import { FieldError } from "heroui-native/field-error";
-import { InputGroup, InputGroupInputProps } from "heroui-native/input-group";
+import {
+  InputGroup,
+  type InputGroupInputProps,
+} from "heroui-native/input-group";
 import { Label } from "heroui-native/label";
 import { TextField } from "heroui-native/text-field";
 import { cn } from "heroui-native/utils";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { FadeInUp } from "react-native-reanimated";
 
 function errorText(error: unknown): string {
@@ -66,7 +69,8 @@ export default function FormInput({
                     value: FadeInUp.delay((index - 1) * 100),
                   },
                 }
-          }>
+          }
+        >
           {errorText(error)}
         </FieldError>
       ))}

@@ -36,7 +36,8 @@ export async function promptUser(projectNameArg?: string): Promise<Answers> {
   // Project name
   if (projectNameArg) {
     const validation = validateProjectName(projectNameArg);
-    if (validation !== true) throw new Error(`Invalid project name: ${validation}`);
+    if (validation !== true)
+      throw new Error(`Invalid project name: ${validation}`);
     answers.projectName = projectNameArg;
   } else {
     answers.projectName = await inquirer.input({
@@ -58,10 +59,26 @@ export async function promptUser(projectNameArg?: string): Promise<Answers> {
   answers.packageManager = await inquirer.select({
     message: "Which package manager do you want to use?",
     choices: [
-      { name: "npm", value: "npm" as const, description: "Default Node.js package manager" },
-      { name: "pnpm", value: "pnpm" as const, description: "Fast, disk space efficient" },
-      { name: "yarn", value: "yarn" as const, description: "Fast, reliable package manager" },
-      { name: "bun", value: "bun" as const, description: "Fast JavaScript runtime & package manager" },
+      {
+        name: "npm",
+        value: "npm" as const,
+        description: "Default Node.js package manager",
+      },
+      {
+        name: "pnpm",
+        value: "pnpm" as const,
+        description: "Fast, disk space efficient",
+      },
+      {
+        name: "yarn",
+        value: "yarn" as const,
+        description: "Fast, reliable package manager",
+      },
+      {
+        name: "bun",
+        value: "bun" as const,
+        description: "Fast JavaScript runtime & package manager",
+      },
     ],
     default: "npm",
   });
@@ -73,7 +90,8 @@ export async function promptUser(projectNameArg?: string): Promise<Answers> {
       {
         name: "API Backend (FastAPI)",
         value: "api-backend" as Feature,
-        description: "Auth, API client, and profile connected to FastAPI backend",
+        description:
+          "Auth, API client, and profile connected to FastAPI backend",
         checked: true,
       },
       {

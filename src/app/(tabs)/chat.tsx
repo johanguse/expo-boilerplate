@@ -1,15 +1,16 @@
 import ChatBubble from "@components/chat/ChatBubble";
 import ChatInput from "@components/chat/ChatInput";
 import StreamingIndicator from "@components/chat/StreamingIndicator";
+import { SIonicons } from "@components/common/Icons";
 import { useTranslation } from "@i18n";
-import useChatStore from "@stores/chat.zustand";
 import { LegendList } from "@legendapp/list";
+import type { Message } from "@stores/chat.zustand";
+import useChatStore from "@stores/chat.zustand";
 import { Button } from "heroui-native/button";
-import React, { useCallback, useRef } from "react";
+import type React from "react";
+import { useCallback, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { SIonicons } from "@components/common/Icons";
-import type { Message } from "@stores/chat.zustand";
 
 function EmptyChat({
   onSuggest,
@@ -40,7 +41,11 @@ function EmptyChat({
             onPress={() => onSuggest(s)}
             className="flex-row items-center gap-x-3 bg-default-50 border border-default-100 rounded-2xl px-4 py-3 active:bg-default-100"
           >
-            <SIonicons size={14} name="arrow-forward-circle-outline" className="text-primary" />
+            <SIonicons
+              size={14}
+              name="arrow-forward-circle-outline"
+              className="text-primary"
+            />
             <Text className="text-sm text-default-600 flex-1">{s}</Text>
           </Pressable>
         ))}
@@ -58,10 +63,12 @@ export default function Chat() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const suggestions = t("chat.suggestions", { returnObjects: true }) as string[];
+  const suggestions = t("chat.suggestions", {
+    returnObjects: true,
+  }) as string[];
 
   const visibleMessages = messages.filter(
-    (m) => !(m.role === "assistant" && m.content === "" && isStreaming)
+    (m) => !(m.role === "assistant" && m.content === "" && isStreaming),
   );
 
   const lastMsg = messages[messages.length - 1];
@@ -84,7 +91,7 @@ export default function Chat() {
         />
       );
     },
-    [visibleMessages, isStreaming, lastMessageId]
+    [visibleMessages, isStreaming, lastMessageId],
   );
 
   function handleSend(text: string) {
@@ -107,8 +114,14 @@ export default function Chat() {
         </View>
         {hasMessages && (
           <Button size="sm" variant="ghost" onPress={clearHistory}>
-            <SIonicons size={15} name="trash-outline" className="text-default-400" />
-            <Button.Label className="text-default-400 text-xs">{t("chat.clear")}</Button.Label>
+            <SIonicons
+              size={15}
+              name="trash-outline"
+              className="text-default-400"
+            />
+            <Button.Label className="text-default-400 text-xs">
+              {t("chat.clear")}
+            </Button.Label>
           </Button>
         )}
       </View>

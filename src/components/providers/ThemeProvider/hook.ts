@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, Theme } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, type Theme } from "@react-navigation/native";
 import { useThemeColor } from "heroui-native";
 import { useUniwind } from "uniwind";
 

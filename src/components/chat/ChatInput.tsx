@@ -1,12 +1,7 @@
-import React, { useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  TextInput,
-  View,
-} from "react-native";
-import * as Haptics from "expo-haptics";
 import { SIonicons } from "@components/common/Icons";
+import * as Haptics from "expo-haptics";
+import { useRef, useState } from "react";
+import { ActivityIndicator, Pressable, TextInput, View } from "react-native";
 
 interface ChatInputProps {
   onSend: (text: string) => void;
@@ -53,19 +48,22 @@ export default function ChatInput({
           onPress={handleSend}
           disabled={!canSend}
           className={`size-11 rounded-full items-center justify-center active:opacity-70 ${
-            isStreaming ? "bg-primary/60" : canSend ? "bg-primary" : "bg-default-200"
+            isStreaming
+              ? "bg-primary/60"
+              : canSend
+                ? "bg-primary"
+                : "bg-default-200"
           }`}
         >
           {isStreaming ? (
-            <ActivityIndicator
-              size="small"
-              colorClassName="accent-white"
-            />
+            <ActivityIndicator size="small" colorClassName="accent-white" />
           ) : (
             <SIonicons
               size={18}
               name="arrow-up"
-              className={canSend ? "text-primary-foreground" : "text-default-400"}
+              className={
+                canSend ? "text-primary-foreground" : "text-default-400"
+              }
             />
           )}
         </Pressable>

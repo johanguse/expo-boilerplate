@@ -1,18 +1,18 @@
 import "global.css";
 
+import { OnboardingProvider } from "@contexts/onboarding-context";
+import { RevenueCatProvider } from "@contexts/revenuecat-context";
+import { useAppFocusRefetch } from "@hooks/useAppFocusRefetch";
+import { useNotifications } from "@hooks/useNotifications";
+import { useOnlineManager } from "@hooks/useOnlineManager";
+import { useNotificationPermission } from "@hooks/usePermission";
 import {
-  HeroUINativeConfig,
+  type HeroUINativeConfig,
   HeroUINativeProvider,
 } from "heroui-native/provider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import ThemeProviderComponent from "./ThemeProvider";
-import { OnboardingProvider } from "@contexts/onboarding-context";
-import { RevenueCatProvider } from "@contexts/revenuecat-context";
-import { useOnlineManager } from "@hooks/useOnlineManager";
-import { useAppFocusRefetch } from "@hooks/useAppFocusRefetch";
-import { useNotificationPermission } from "@hooks/usePermission";
-import { useNotifications } from "@hooks/useNotifications";
 
 type AppProviderProps = {
   children: React.ReactNode;

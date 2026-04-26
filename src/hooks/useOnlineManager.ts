@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { onlineManager } from "@tanstack/react-query";
 import * as Network from "expo-network";
+import { useEffect } from "react";
 
 /**
  * Keeps TanStack Query's onlineManager in sync with the device's

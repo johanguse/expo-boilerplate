@@ -1,22 +1,22 @@
-import path from "path";
-import fs from "fs-extra";
-import ora, { type Ora } from "ora";
+import path from "node:path";
 import * as inquirer from "@inquirer/prompts";
 import fg from "fast-glob";
-import type { Answers, Feature } from "./types.js";
+import fs from "fs-extra";
+import ora, { type Ora } from "ora";
 import { getFeatureToggle } from "./feature-toggles.js";
 import {
+  applyFeatureToggles,
   copyTemplate,
   removeFiles,
-  applyFeatureToggles,
 } from "./file-operations.js";
 import {
   generateTokenMap,
   replaceTokensInAppJson,
-  replaceTokensInPackageJson,
   replaceTokensInFile,
+  replaceTokensInPackageJson,
   shouldReplaceTokensInFile,
 } from "./tokens.js";
+import type { Answers, Feature } from "./types.js";
 
 /**
  * Main scaffolder function
@@ -24,7 +24,7 @@ import {
 export async function runScaffolder(
   answers: Answers,
   templateDir: string,
-  skipConfirm: boolean = false
+  skipConfirm: boolean = false,
 ): Promise<void> {
   const targetDir = path.resolve(process.cwd(), answers.projectName);
 
@@ -60,7 +60,7 @@ export async function runScaffolder(
     await replaceTokensInAppJson(path.join(targetDir, "app.json"), tokens);
     await replaceTokensInPackageJson(
       path.join(targetDir, "package.json"),
-      tokens
+      tokens,
     );
 
     // Replace API base URL if provided
@@ -97,7 +97,7 @@ export async function runScaffolder(
   try {
     const allFeatures: Feature[] = ["api-backend", "onboarding", "revenuecat"];
     const featuresToDisable = allFeatures.filter(
-      (f) => !answers.features.includes(f)
+      (f) => !answers.features.includes(f),
     );
 
     for (const feature of featuresToDisable) {

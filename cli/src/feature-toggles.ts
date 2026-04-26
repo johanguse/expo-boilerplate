@@ -43,10 +43,7 @@ export const REVENUECAT_TOGGLE: FeatureToggleConfig = {
     "src/config/revenuecat.ts",
   ],
   filesToModify: [],
-  dependenciesToRemove: [
-    "react-native-purchases",
-    "react-native-purchases-ui",
-  ],
+  dependenciesToRemove: ["react-native-purchases", "react-native-purchases-ui"],
   pluginsToRemove: [],
   providersToRemove: ["RevenueCatProvider"],
   contextsToRemove: ["revenuecat-context"],

@@ -13,7 +13,8 @@ export function OnboardingButton({ label, onPress }: OnboardingButtonProps) {
   return (
     <View
       className="px-6"
-      style={{ paddingBottom: insets.bottom, paddingTop: 12 }}>
+      style={{ paddingBottom: insets.bottom, paddingTop: 12 }}
+    >
       <Button variant="primary" size="lg" onPress={onPress}>
         <Button.Label>{label}</Button.Label>
       </Button>

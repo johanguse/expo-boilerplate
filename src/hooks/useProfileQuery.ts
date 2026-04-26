@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser, type UserProfile } from "@api/auth";
 import { queryKeys } from "@api/query-keys";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * Fetches the current user's profile.

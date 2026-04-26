@@ -1,6 +1,5 @@
-import path from "path";
+import path from "node:path";
 import fs from "fs-extra";
-import fg from "fast-glob";
 import type { TokenMap } from "./types.js";
 
 /**
@@ -8,7 +7,7 @@ import type { TokenMap } from "./types.js";
  */
 export function generateTokenMap(
   projectName: string,
-  bundleId: string
+  bundleId: string,
 ): TokenMap {
   const displayName = projectName
     .split("-")
@@ -29,7 +28,7 @@ export function generateTokenMap(
  */
 export async function replaceTokensInAppJson(
   filePath: string,
-  tokens: TokenMap
+  tokens: TokenMap,
 ): Promise<void> {
   if (!(await fs.exists(filePath))) return;
 
@@ -59,7 +58,7 @@ export async function replaceTokensInAppJson(
  */
 export async function replaceTokensInPackageJson(
   filePath: string,
-  tokens: TokenMap
+  tokens: TokenMap,
 ): Promise<void> {
   if (!(await fs.exists(filePath))) return;
 
@@ -82,7 +81,7 @@ export function shouldReplaceTokensInFile(filePath: string): boolean {
  */
 export async function replaceTokensInFile(
   filePath: string,
-  tokens: TokenMap
+  tokens: TokenMap,
 ): Promise<void> {
   let content = await fs.readFile(filePath, "utf-8");
 
@@ -90,7 +89,7 @@ export async function replaceTokensInFile(
   content = content.replace(/expo-boilerplate/g, tokens.projectName);
   content = content.replace(
     /com\.anonymous\.expo-boilerplate/g,
-    tokens.iosBundleIdentifier
+    tokens.iosBundleIdentifier,
   );
 
   await fs.writeFile(filePath, content, "utf-8");

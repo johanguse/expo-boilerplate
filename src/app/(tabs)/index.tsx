@@ -1,10 +1,9 @@
 import { SIonicons } from "@components/common/Icons";
-import { useTranslation } from "@i18n";
 import { useRevenueCat } from "@contexts/revenuecat-context";
+import { useTranslation } from "@i18n";
 import useAuthManage from "@stores/auth.zustand";
+import { type Href, useRouter } from "expo-router";
 import { Card } from "heroui-native/card";
-import { Href, useRouter } from "expo-router";
-import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -28,14 +27,24 @@ function FeatureCard({
   return (
     <Pressable onPress={onPress} className="active:opacity-80">
       <Card className="p-4 flex-row items-center gap-x-3">
-        <View className={`size-10 ${accent} rounded-xl items-center justify-center`}>
+        <View
+          className={`size-10 ${accent} rounded-xl items-center justify-center`}
+        >
           <SIonicons size={20} name={icon as never} className={iconColor} />
         </View>
         <View className="flex-1">
-          <Text className="text-default-foreground text-sm font-semibold">{title}</Text>
-          <Text className="text-default-500 text-xs mt-0.5 leading-relaxed">{description}</Text>
+          <Text className="text-default-foreground text-sm font-semibold">
+            {title}
+          </Text>
+          <Text className="text-default-500 text-xs mt-0.5 leading-relaxed">
+            {description}
+          </Text>
         </View>
-        <SIonicons size={14} name="chevron-forward" className="text-default-300" />
+        <SIonicons
+          size={14}
+          name="chevron-forward"
+          className="text-default-300"
+        />
       </Card>
     </Pressable>
   );
@@ -105,11 +114,19 @@ export default function Index() {
         style={{ paddingTop: insets.top + 16 }}
       >
         <View>
-          <Text className="text-sm text-default-400 mb-1">{t("home.greeting")}</Text>
-          <Text className="text-2xl font-bold text-default-foreground">{firstName}</Text>
+          <Text className="text-sm text-default-400 mb-1">
+            {t("home.greeting")}
+          </Text>
+          <Text className="text-2xl font-bold text-default-foreground">
+            {firstName}
+          </Text>
         </View>
         <View className="size-10 bg-primary/10 rounded-2xl items-center justify-center">
-          <SIonicons size={20} name="hand-right-outline" className="text-primary" />
+          <SIonicons
+            size={20}
+            name="hand-right-outline"
+            className="text-primary"
+          />
         </View>
       </View>
 
@@ -123,7 +140,11 @@ export default function Index() {
             className="flex-1 bg-primary rounded-2xl p-5 items-center gap-y-2.5 active:opacity-75"
           >
             <View className="size-10 bg-primary-foreground/10 rounded-xl items-center justify-center">
-              <SIonicons size={22} name="chatbubble-ellipses" className="text-primary-foreground" />
+              <SIonicons
+                size={22}
+                name="chatbubble-ellipses"
+                className="text-primary-foreground"
+              />
             </View>
             <Text className="text-primary-foreground font-semibold text-sm">
               {t("home.startChat")}
@@ -134,7 +155,11 @@ export default function Index() {
             className="flex-1 bg-default-100 rounded-2xl p-5 items-center gap-y-2.5 active:bg-default-200"
           >
             <View className="size-10 bg-default-200 rounded-xl items-center justify-center">
-              <SIonicons size={22} name="person-circle-outline" className="text-default-600" />
+              <SIonicons
+                size={22}
+                name="person-circle-outline"
+                className="text-default-600"
+              />
             </View>
             <Text className="text-default-600 font-semibold text-sm">
               {t("home.editProfile")}
@@ -152,8 +177,12 @@ export default function Index() {
             <SIonicons size={22} name="star" className="text-white" />
           </View>
           <View className="flex-1">
-            <Text className="text-white font-bold text-sm">{t("home.tryPro")}</Text>
-            <Text className="text-amber-100 text-xs mt-0.5">{t("home.tryProDesc")}</Text>
+            <Text className="text-white font-bold text-sm">
+              {t("home.tryPro")}
+            </Text>
+            <Text className="text-amber-100 text-xs mt-0.5">
+              {t("home.tryProDesc")}
+            </Text>
           </View>
           <View className="bg-white/20 rounded-full px-2.5 py-1">
             <Text className="text-white text-xs font-semibold">

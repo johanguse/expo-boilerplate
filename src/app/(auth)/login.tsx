@@ -5,11 +5,11 @@ import FormInput from "@components/form/FormInput";
 import { useTranslation } from "@i18n";
 import useAuthManage from "@stores/auth.zustand";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "expo-router";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -65,7 +65,11 @@ export default function Login() {
           style={{ paddingTop: insets.top + 48 }}
         >
           <View className="size-16 bg-primary rounded-2xl items-center justify-center mb-5 shadow-lg">
-            <SIonicons size={32} name="rocket" className="text-primary-foreground" />
+            <SIonicons
+              size={32}
+              name="rocket"
+              className="text-primary-foreground"
+            />
           </View>
           <Text className="text-2xl font-bold text-default-foreground">
             {t("auth.login.title")}
@@ -85,7 +89,11 @@ export default function Login() {
                 keyboardType="email-address"
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons size={18} name="mail-outline" className="text-default-400" />
+                  <SIonicons
+                    size={18}
+                    name="mail-outline"
+                    className="text-default-400"
+                  />
                 </InputGroup.Prefix>
               </FormInput>
             )}
@@ -100,11 +108,24 @@ export default function Login() {
                 secureTextEntry={!showPass}
               >
                 <InputGroup.Prefix isDecorative>
-                  <SIonicons size={18} name="lock-closed-outline" className="text-default-400" />
+                  <SIonicons
+                    size={18}
+                    name="lock-closed-outline"
+                    className="text-default-400"
+                  />
                 </InputGroup.Prefix>
                 <InputGroup.Suffix>
-                  <Button isIconOnly size="sm" variant="ghost" onPress={() => setShowPass(!showPass)}>
-                    <SIonicons size={18} name={showPass ? "eye" : "eye-off"} className="text-default-400" />
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="ghost"
+                    onPress={() => setShowPass(!showPass)}
+                  >
+                    <SIonicons
+                      size={18}
+                      name={showPass ? "eye" : "eye-off"}
+                      className="text-default-400"
+                    />
                   </Button>
                 </InputGroup.Suffix>
               </FormInput>
@@ -131,8 +152,14 @@ export default function Login() {
         </View>
 
         <View className="flex-row justify-center items-center mt-4 pb-8 gap-x-1">
-          <Text className="text-default-500 text-sm">{t("auth.login.noAccount")}</Text>
-          <Button variant="ghost" size="sm" onPress={() => router.push("/(auth)/signup")}>
+          <Text className="text-default-500 text-sm">
+            {t("auth.login.noAccount")}
+          </Text>
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => router.push("/(auth)/signup")}
+          >
             <Button.Label className="text-primary font-semibold text-sm">
               {t("auth.login.signUp")}
             </Button.Label>

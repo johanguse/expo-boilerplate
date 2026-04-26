@@ -1,7 +1,9 @@
-import { Platform } from "react-native";
 import analytics from "@react-native-firebase/analytics";
 import crashlytics from "@react-native-firebase/crashlytics";
-import perf, { type FirebasePerformanceTypes } from "@react-native-firebase/perf";
+import perf, {
+  type FirebasePerformanceTypes,
+} from "@react-native-firebase/perf";
+import { Platform } from "react-native";
 
 const isNative = Platform.OS === "ios" || Platform.OS === "android";
 
@@ -14,10 +16,7 @@ export function initFirebase(): void {
  * Log a non-fatal error; optional key/value context is applied as custom keys
  * (they persist for subsequent events until cleared — use sparingly).
  */
-export function logError(
-  error: Error,
-  context?: Record<string, string>
-): void {
+export function logError(error: Error, context?: Record<string, string>): void {
   if (!isNative) return;
   if (context) {
     for (const [k, v] of Object.entries(context)) {
@@ -34,7 +33,7 @@ export function logError(
  */
 export async function traceHttpRequest(
   url: string,
-  method: FirebasePerformanceTypes.HttpMethod
+  method: FirebasePerformanceTypes.HttpMethod,
 ): Promise<FirebasePerformanceTypes.HttpMetric> {
   if (!isNative) {
     return {
@@ -86,12 +85,8 @@ export const track = {
     isNative ? analytics().logEvent(name, params) : Promise.resolve(),
 
   login: (method: string) =>
-    isNative
-      ? analytics().logLogin({ method })
-      : Promise.resolve(),
+    isNative ? analytics().logLogin({ method }) : Promise.resolve(),
 
   signUp: (method: string) =>
-    isNative
-      ? analytics().logSignUp({ method })
-      : Promise.resolve(),
+    isNative ? analytics().logSignUp({ method }) : Promise.resolve(),
 };

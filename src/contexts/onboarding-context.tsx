@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from "react";
-import { storage, storage_instance, StorageKeys } from "@lib/storage";
+import { StorageKeys, storage, storage_instance } from "@lib/storage";
+import type React from "react";
+import { createContext, useContext, useState } from "react";
 
 type OnboardingContextType = {
   onboardingDone: boolean | null;
@@ -7,7 +8,7 @@ type OnboardingContextType = {
 };
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function OnboardingProvider({
@@ -18,7 +19,7 @@ export function OnboardingProvider({
   const [onboardingDone, setOnboardingDoneState] = useState<boolean | null>(
     () => {
       return storage_instance.getBoolean(StorageKeys.ONBOARDING_DONE) ?? false;
-    }
+    },
   );
 
   const setOnboardingDone = (done: boolean) => {

@@ -1,14 +1,14 @@
 import { Platform } from "react-native";
 import {
-  usePermissionHandler,
   type PermissionHandlerConfig,
   type PermissionHandlerResult,
+  usePermissionHandler,
 } from "react-native-permission-handler";
-import {
-  Permissions,
-  createRNPEngine,
-} from "react-native-permission-handler/rnp";
 import { createNoopEngine } from "react-native-permission-handler/noop";
+import {
+  createRNPEngine,
+  Permissions,
+} from "react-native-permission-handler/rnp";
 
 const webEngine = createNoopEngine("unavailable");
 
@@ -19,7 +19,7 @@ type UsePermissionOptions = Partial<
 >;
 
 export function useCameraPermission(
-  options: UsePermissionOptions = {}
+  options: UsePermissionOptions = {},
 ): PermissionHandlerResult {
   return usePermissionHandler({
     permission: Permissions.CAMERA,
@@ -31,7 +31,7 @@ export function useCameraPermission(
 }
 
 export function useNotificationPermission(
-  options: UsePermissionOptions = {}
+  options: UsePermissionOptions = {},
 ): PermissionHandlerResult {
   return usePermissionHandler({
     permission: Permissions.NOTIFICATIONS,

@@ -5,12 +5,17 @@ import { useTranslation } from "@i18n";
 import useAuthManage from "@stores/auth.zustand";
 import useProfileStore from "@stores/profile.zustand";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "expo-router";
 import { Button } from "heroui-native/button";
 import { InputGroup } from "heroui-native/input-group";
 import { useToast } from "heroui-native/toast";
-import { useRouter } from "expo-router";
-import React from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -83,8 +88,17 @@ export default function EditProfile() {
         className="flex-row items-center gap-x-3 px-4 border-b border-default-100"
         style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}
       >
-        <Button isIconOnly variant="ghost" size="sm" onPress={() => router.back()}>
-          <SIonicons size={20} name="arrow-back" className="text-default-foreground" />
+        <Button
+          isIconOnly
+          variant="ghost"
+          size="sm"
+          onPress={() => router.back()}
+        >
+          <SIonicons
+            size={20}
+            name="arrow-back"
+            className="text-default-foreground"
+          />
         </Button>
         <Text className="text-lg font-semibold text-default-foreground flex-1">
           {t("editProfile.title")}
@@ -92,7 +106,11 @@ export default function EditProfile() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: insets.bottom + 32 }}
+        contentContainerStyle={{
+          padding: 16,
+          gap: 12,
+          paddingBottom: insets.bottom + 32,
+        }}
         keyboardShouldPersistTaps="handled"
       >
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mt-2 mb-1">
@@ -101,16 +119,30 @@ export default function EditProfile() {
 
         <form.Field name="name">
           {(field) => (
-            <FormInput field={field} label={t("editProfile.fullName")} autoCapitalize="words">
+            <FormInput
+              field={field}
+              label={t("editProfile.fullName")}
+              autoCapitalize="words"
+            >
               <InputGroup.Prefix isDecorative>
-                <SIonicons size={18} name="person-outline" className="text-default-400" />
+                <SIonicons
+                  size={18}
+                  name="person-outline"
+                  className="text-default-400"
+                />
               </InputGroup.Prefix>
             </FormInput>
           )}
         </form.Field>
 
         <form.Field name="bio">
-          {(field) => <FormInput field={field} label={t("editProfile.bio")} autoCapitalize="sentences" />}
+          {(field) => (
+            <FormInput
+              field={field}
+              label={t("editProfile.bio")}
+              autoCapitalize="sentences"
+            />
+          )}
         </form.Field>
 
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mt-4 mb-1">
@@ -118,11 +150,23 @@ export default function EditProfile() {
         </Text>
 
         <form.Field name="company">
-          {(field) => <FormInput field={field} label={t("editProfile.company")} autoCapitalize="words" />}
+          {(field) => (
+            <FormInput
+              field={field}
+              label={t("editProfile.company")}
+              autoCapitalize="words"
+            />
+          )}
         </form.Field>
 
         <form.Field name="job_title">
-          {(field) => <FormInput field={field} label={t("editProfile.jobTitle")} autoCapitalize="words" />}
+          {(field) => (
+            <FormInput
+              field={field}
+              label={t("editProfile.jobTitle")}
+              autoCapitalize="words"
+            />
+          )}
         </form.Field>
 
         <Text className="text-xs font-semibold text-default-400 uppercase tracking-widest mt-4 mb-1">
@@ -152,7 +196,13 @@ export default function EditProfile() {
         </form.Field>
 
         <form.Field name="country">
-          {(field) => <FormInput field={field} label={t("editProfile.country")} autoCapitalize="words" />}
+          {(field) => (
+            <FormInput
+              field={field}
+              label={t("editProfile.country")}
+              autoCapitalize="words"
+            />
+          )}
         </form.Field>
 
         <form.Field name="timezone">

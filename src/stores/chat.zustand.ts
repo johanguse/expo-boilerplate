@@ -1,5 +1,5 @@
+import { type ChatMessage, streamChat } from "@api/ai";
 import { create } from "zustand";
-import { streamChat, type ChatMessage } from "@api/ai";
 
 export interface Message {
   id: string;
@@ -62,7 +62,7 @@ const useChatStore = create<ChatState>((set, get) => ({
       for await (const chunk of streamChat(history)) {
         set((state) => ({
           messages: state.messages.map((m) =>
-            m.id === assistantId ? { ...m, content: m.content + chunk } : m
+            m.id === assistantId ? { ...m, content: m.content + chunk } : m,
           ),
         }));
       }
@@ -74,7 +74,7 @@ const useChatStore = create<ChatState>((set, get) => ({
       // Replace the empty assistant message with the error
       set((state) => ({
         messages: state.messages.map((m) =>
-          m.id === assistantId ? { ...m, content: errorText } : m
+          m.id === assistantId ? { ...m, content: errorText } : m,
         ),
         error: errorText,
       }));

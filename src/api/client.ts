@@ -1,5 +1,5 @@
 import { API_V1 } from "@config/api";
-import { storage, StorageKeys } from "@lib/storage";
+import { StorageKeys, storage } from "@lib/storage";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -53,7 +53,7 @@ async function request<T>(
   method: HttpMethod,
   path: string,
   body?: unknown,
-  options?: RequestOptions
+  options?: RequestOptions,
 ): Promise<T> {
   const url = path.startsWith("http") ? path : `${API_V1}${path}`;
 
@@ -64,7 +64,7 @@ async function request<T>(
   if (!options?.noAuth) {
     const token = storage.getString(StorageKeys.ACCESS_TOKEN);
     if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+      headers.Authorization = `Bearer ${token}`;
     }
   }
 
@@ -110,9 +110,7 @@ async function request<T>(
     if (Array.isArray(rawDetail)) {
       // FastAPI validation errors: [{type, loc, msg, input}, ...]
       detail = rawDetail
-        .map(
-          (e: { msg?: string }) => e?.msg ?? String(e)
-        )
+        .map((e: { msg?: string }) => e?.msg ?? String(e))
         .join(". ");
     } else if (typeof rawDetail === "string") {
       detail = rawDetail;

@@ -7,7 +7,9 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
     "test": "jest --passWithNoTests",
     "pb": "expo prebuild",
     "pb:c": "expo prebuild --clean",
@@ -79,10 +81,9 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.13",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.2.14",
-    "eslint": "^9.39.4",
-    "eslint-config-expo": "~55.0.0",
     "jest": "^30.3.0",
     "ts-jest": "^29.4.9",
     "typescript": "~5.9.3"

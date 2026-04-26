@@ -1,10 +1,15 @@
+import { registerPushToken } from "@api/push";
+import {
+  displayLocalNotification,
+  setupNotificationChannels,
+} from "@lib/notifications";
+import messaging, {
+  type RemoteMessage,
+} from "@react-native-firebase/messaging";
+import useAuthManage from "@stores/auth.zustand";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
-import messaging, { type RemoteMessage } from "@react-native-firebase/messaging";
 import type { PermissionHandlerResult } from "react-native-permission-handler";
-import { registerPushToken } from "@api/push";
-import { displayLocalNotification, setupNotificationChannels } from "@lib/notifications";
-import useAuthManage from "@stores/auth.zustand";
 
 const isNativePush = Platform.OS === "ios" || Platform.OS === "android";
 
@@ -25,9 +30,7 @@ function onForegroundMessage(remoteMessage: RemoteMessage) {
  * permission is granted; show notify-kit local notifications in the foreground
  * for incoming pushes.
  */
-export function useNotifications(
-  permission: PermissionHandlerResult
-): void {
+export function useNotifications(permission: PermissionHandlerResult): void {
   const isLogin = useAuthManage((s) => s.isLogin);
   const lastSentToken = useRef<string | null>(null);
 
@@ -82,7 +85,10 @@ export function useNotifications(
           lastSentToken.current = newToken;
         } catch (err) {
           if (__DEV__) {
-            console.warn("[useNotifications] onTokenRefresh register failed", err);
+            console.warn(
+              "[useNotifications] onTokenRefresh register failed",
+              err,
+            );
           }
         }
       })();

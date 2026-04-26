@@ -1,5 +1,8 @@
-import ActionButton, { ActionButtonProps } from "@components/common/ActionButton";
-import React, { PropsWithChildren } from "react";
+import ActionButton, {
+  type ActionButtonProps,
+} from "@components/common/ActionButton";
+import type React from "react";
+import type { PropsWithChildren } from "react";
 
 export type SubmitFormHandle = {
   handleSubmit: () => void | Promise<void>;
@@ -26,7 +29,8 @@ const FormButton: React.FC<FormButtonProps> = (props) => {
       action={async () => {
         await form.handleSubmit();
       }}
-      isSubmitting={form.state.isSubmitting}>
+      isSubmitting={form.state.isSubmitting}
+    >
       {children}
     </ActionButton>
   );
