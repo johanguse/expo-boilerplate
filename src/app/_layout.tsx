@@ -18,7 +18,7 @@ import {
 initFirebase();
 
 export const unstable_settings = {
-  anchor: "(tabs)",
+  anchor: "(drawer)",
 };
 
 configureReanimatedLogger({
@@ -57,7 +57,7 @@ function AppLayout() {
     isLogin &&
     (pathname.startsWith("/onboarding") || pathname.startsWith("/(auth)"))
   ) {
-    return <Redirect href="/(tabs)" />;
+    return <Redirect href="/" />;
   }
 
   // Redirect to onboarding if not completed
@@ -74,7 +74,7 @@ function AppLayout() {
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         </Stack.Protected>
         <Stack.Protected guard={isLogin}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
           <Stack.Screen name="profile" options={{ headerShown: false }} />
         </Stack.Protected>
       </Stack>

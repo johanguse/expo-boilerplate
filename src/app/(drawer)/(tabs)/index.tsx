@@ -136,7 +136,7 @@ export default function Index() {
         </Text>
         <View className="flex-row gap-x-3">
           <Pressable
-            onPress={() => router.push("/(tabs)/chat")}
+            onPress={() => router.push("/chat")}
             className="flex-1 bg-primary rounded-2xl p-5 items-center gap-y-2.5 active:opacity-75"
           >
             <View className="size-10 bg-primary-foreground/10 rounded-xl items-center justify-center">
