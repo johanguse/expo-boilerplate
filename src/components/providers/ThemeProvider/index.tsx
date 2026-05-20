@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider } from "expo-router/react-navigation";
 import { useTheme } from "./hook";
 
 type ThemeProviderComponentProps = {
