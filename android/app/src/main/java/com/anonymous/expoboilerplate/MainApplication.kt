@@ -11,6 +11,7 @@ import com.facebook.react.ReactHost
 import com.facebook.react.common.ReleaseLevel
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 
+import com.margelo.nitro.nitrofetch.AutoPrefetcher
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ExpoReactHostFactory
 
@@ -34,6 +35,8 @@ class MainApplication : Application(), ReactApplication {
     } catch (e: IllegalArgumentException) {
       ReleaseLevel.STABLE
     }
+    // Replay prefetchOnAppStart entries before React Native boots
+    try { AutoPrefetcher.prefetchOnStart(this) } catch (_: Throwable) {}
     loadReactNative(this)
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
   }

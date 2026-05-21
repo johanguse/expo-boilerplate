@@ -1,4 +1,6 @@
-// i18n must be imported first — side-effect initializes i18next before any screen
+// nitro-fetch must be first — replaces globalThis.fetch with the native implementation
+import "@lib/nitro-fetch";
+// i18n must be imported before any screen
 import "@i18n";
 import AppProvider from "@components/providers";
 import { useOnboarding } from "@contexts/onboarding-context";
