@@ -84,6 +84,8 @@ bun run rename-app -- --help
 - **Uniwind** — Tailwind CSS v4 for React Native
 - **Onboarding** — Multi-step flow with MMKV persistence
 - **RevenueCat** — Paywall and subscriptions (optional)
+- **Animations** — `react-native-reanimated` v4 with `wrapWithReanimatedMetroConfig` already wired in `metro.config.js`. Ready-to-use components: `<FadeSlideView>`, `<AnimatedListItem>`, `<PressScale>`. Entering animations (`FadeIn`, `FadeInUp`) on buttons and inputs.
+- **Networking** — `react-native-nitro-fetch` replaces `globalThis.fetch` at boot (URLSession on iOS, OkHttp on Android). Use the same `fetch` API you know; the native engine is wired automatically. `react-native-nitro-websockets` and `react-native-nitro-text-decoder` are also installed for native WebSockets and fast UTF-8 decoding.
 - **Firebase** — `src/lib/firebase.ts`: init in `_layout`, Crashlytics (off in dev), Analytics `track`, Performance `traceHttpRequest` (native build)
 - **Push** — FCM token → `POST /api/v1/users/me/push-token` when signed in; foreground remote messages via notify-kit (`src/lib/notifications.ts`, `useNotifications`)
 - **Permissions** — `react-native-permission-handler` + RNP (`useCameraPermission`, `useNotificationPermission` in `src/hooks/usePermission.ts`)
@@ -102,7 +104,7 @@ Separation follows a **feature-friendly** layout: routing in `app/`, **API and s
 | **`src/app/`** | Expo Router screens only (auth, tabs, profile, onboarding). No duplicate `screens/` tree. |
 | **`src/api/`** | Typed HTTP: `client.ts` (JWT, 401), `auth.ts`, `profile.ts`, `push.ts` (FCM token), `ai.ts`, `query-keys.ts`. |
 | **`src/stores/`** | Zustand: session (`auth`), AI chat, profile updates synced with `api`. |
-| **`src/lib/`** | Infrastructure: `react-query.tsx` (`ReactQueryProvider` — **outermost in `app/_layout.tsx`**), `storage.ts` (MMKV), `streamClient.ts`, `firebase.ts`, `notifications.ts`. No legacy `services/` or `screens/` trees. |
+| **`src/lib/`** | Infrastructure: `react-query.tsx` (`ReactQueryProvider` — **outermost in `app/_layout.tsx`**), `storage.ts` (MMKV), `streamClient.ts`, `firebase.ts`, `notifications.ts`, `nitro-fetch.ts` (global fetch replacement). No legacy `services/` or `screens/` trees. |
 | **`src/components/`** | Reusable UI; **`components/form/`** wraps HeroUI with **TanStack Form** field API. |
 | **`src/hooks/`** | Cross-cutting hooks: e.g. `usePermission` (camera / notifications), `useNotifications`, online/focus refetch, profile helpers. |
 | **`src/config/`** | `api.ts`, `revenuecat.ts`, `firebase.ts` (path hints for native config files). |
@@ -179,6 +181,131 @@ Set your backend in `app.json`:
 }
 ```
 
+## Animations (Reanimated)
+
+**`react-native-reanimated` v4** is installed and fully wired — no setup needed in new screens.
+
+- **Metro:** `metro.config.js` wraps with `wrapWithReanimatedMetroConfig` (already done).
+- **Logger:** `configureReanimatedLogger({ strict: false, level: ReanimatedLogLevel.warn })` configured in `src/app/_layout.tsx` to suppress strict-mode noise in development.
+- **Worklets:** `react-native-worklets` is installed alongside Reanimated 4 as required.
+
+### Reusable animated components
+
+| Component | File | What it does |
+|---|---|---|
+| `<FadeSlideView>` | `src/components/FadeSlideView.tsx` | Fades + slides children in on mount. Props: `delay`, `duration`, `fromY`. |
+| `<AnimatedListItem>` | `src/components/AnimatedListItem.tsx` | Staggered fade-up for list rows. Pass `index` and optional `baseDelay`; items enter 55 ms apart. |
+| `<PressScale>` | `src/components/PressScale.tsx` | Wraps any content in an `Animated.Pressable` that scales down on press. Prop: `scaleTo` (default `0.97`). |
+
+### Usage examples
+
+```tsx
+// Fade + slide a screen section in
+import { FadeSlideView } from '@components/FadeSlideView';
+
+<FadeSlideView delay={120} fromY={24}>
+  <Text>Appears 120 ms after mount, sliding up from 24 px below</Text>
+</FadeSlideView>
+
+// Stagger a list
+import { AnimatedListItem } from '@components/AnimatedListItem';
+
+{items.map((item, i) => (
+  <AnimatedListItem key={item.id} index={i}>
+    <ItemCard item={item} />
+  </AnimatedListItem>
+))}
+
+// Pressable with scale feedback
+import { PressScale } from '@components/PressScale';
+
+<PressScale onPress={handlePress} scaleTo={0.95}>
+  <MyCard />
+</PressScale>
+```
+
+### Entering animations
+
+`FadeIn` and `FadeInUp` from Reanimated are used on `ActionButton` and `FormInput`. To use them on any `Animated.*` component:
+
+```tsx
+import Animated, { FadeInUp } from 'react-native-reanimated';
+
+<Animated.View entering={FadeInUp.delay(200).duration(350)}>
+  {/* content */}
+</Animated.View>
+```
+
+### Key APIs in use
+
+- `useSharedValue` / `useAnimatedStyle` — all animated components use these for worklet-driven style updates
+- `withTiming` + `withDelay` — smooth cubic-eased entrance and press animations
+- `Easing.out(Easing.cubic)` — consistent easing curve across all components
+- `Animated.createAnimatedComponent` — used in `PressScale` and `LiquidGlassTabs` to animate non-Animated primitives
+
+---
+
+## Networking (nitro-fetch)
+
+All `fetch` calls in the app go through [`react-native-nitro-fetch`](https://github.com/margelo/react-native-nitro-fetch) — a native-backed replacement wired at boot in `src/lib/nitro-fetch.ts` and imported as the very first line of `src/app/_layout.tsx`.
+
+**No changes needed in your API layer** — `fetch` works exactly the same way; the native engine is transparent.
+
+### Cold-start prefetching
+
+To warm the cache before React Native loads, call `prefetchOnAppStart` after login:
+
+```ts
+import { prefetchOnAppStart, removeAllFromAutoprefetch } from 'react-native-nitro-fetch';
+
+// After login — fires on every subsequent cold start before JS runs
+await prefetchOnAppStart('https://api.example.com/feed', {
+  prefetchKey: 'home-feed',
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+// Then consume it as usual — hits the cache if ready
+const res = await fetch('https://api.example.com/feed', {
+  headers: { prefetchKey: 'home-feed' },
+});
+```
+
+Always clear on logout to avoid replaying stale credentials:
+
+```ts
+await removeAllFromAutoprefetch();
+```
+
+### WebSockets
+
+Use `NitroWebSocket` for native WebSocket connections (supports custom upgrade headers on iOS — the built-in `WebSocket` does not):
+
+```ts
+import { NitroWebSocket } from 'react-native-nitro-websockets';
+
+const ws = new NitroWebSocket('wss://stream.example.com/feed', [], {
+  Authorization: `Bearer ${token}`,
+});
+ws.onopen    = () => ws.send('hello');
+ws.onmessage = (e) => console.log(e.data);
+ws.onclose   = (e) => ws.close();
+// Always close on unmount:
+// return () => ws.close();
+```
+
+> **Note:** `readyState` is a string (`'OPEN'` / `'CLOSING'` / etc.), not a number.
+
+### After install / on first clone
+
+These are native modules — a prebuild is required before use:
+
+```bash
+bun run pb:i   # iOS
+bun run pb:a   # Android
+```
+
+---
+
 ## Authentication
 
 The app uses a **FastAPI** backend with `fastapi-users` JWT:
@@ -243,6 +370,9 @@ node dist/index.js [project-name] [--default] [--yes]
 - [Uniwind](https://www.npmjs.com/package/uniwind)
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [RevenueCat](https://www.revenuecat.com/docs/)
+- [react-native-nitro-fetch](https://github.com/margelo/react-native-nitro-fetch)
+- [react-native-nitro-websockets](https://github.com/margelo/react-native-nitro-fetch)
+- [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/)
 
 ## License
 
