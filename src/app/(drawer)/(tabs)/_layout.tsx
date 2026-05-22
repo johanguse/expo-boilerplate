@@ -1,14 +1,27 @@
-import { Tabs } from 'expo-router';
-import { LiquidGlassTabs } from '@/components/LiquidGlassTabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
-    <Tabs tabBar={(props) => <LiquidGlassTabs {...props} />}>
-      <Tabs.Screen name="index" options={{ headerShown: false, title: 'Home' }} />
-      <Tabs.Screen name="chat" options={{ headerShown: false, title: 'Chat' }} />
-      <Tabs.Screen name="explore" options={{ headerShown: false, title: 'Explore' }} />
-      <Tabs.Screen name="profile" options={{ headerShown: false, title: 'Profile' }} />
-      <Tabs.Screen name="settings" options={{ href: null, headerShown: false, title: 'Settings' }} />
-    </Tabs>
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="chat">
+        <NativeTabs.Trigger.Icon sf="message.fill" md="chat" />
+        <NativeTabs.Trigger.Label>Chat</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="explore">
+        <NativeTabs.Trigger.Icon sf="safari.fill" md="explore" />
+        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Icon sf="person.circle.fill" md="person" />
+        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
