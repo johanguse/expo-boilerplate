@@ -3,21 +3,24 @@ import { apiClient } from "./client";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+/** Every field is optional, but at least one must be present. */
 export interface UpdateProfilePayload {
   name?: string;
-  phone?: string;
-  company?: string;
-  job_title?: string;
-  country?: string;
-  timezone?: string;
-  bio?: string;
-  website?: string;
+  phone?: string | null;
+  company?: string | null;
+  jobTitle?: string | null;
+  country?: string | null;
+  timezone?: string | null;
+  bio?: string | null;
+  website?: string | null;
+  onboardingCompleted?: boolean;
+  onboardingStep?: number;
 }
 
 // ─── API Calls ───────────────────────────────────────────────────────────────
 
 /**
- * Update the current user's profile.
+ * Update the current user's profile. Returns the full updated user.
  */
 export async function updateProfileAPI(
   payload: UpdateProfilePayload,
@@ -27,11 +30,11 @@ export async function updateProfileAPI(
 
 /**
  * Upload a new profile avatar image.
- * Sends multipart/form-data to the backend.
+ *
+ * The backend stores the file in R2, points the user record at it, and returns
+ * the updated user with `image` already resolved to a fetchable URL.
  */
-export async function uploadAvatarAPI(
-  fileUri: string,
-): Promise<{ avatar_url: string }> {
+export async function uploadAvatarAPI(fileUri: string): Promise<UserProfile> {
   const filename = fileUri.split("/").pop() ?? "avatar.jpg";
   const ext = filename.split(".").pop()?.toLowerCase() ?? "jpg";
   const mimeMap: Record<string, string> = {
@@ -49,20 +52,15 @@ export async function uploadAvatarAPI(
     type: mime,
   } as unknown as Blob);
 
-  return apiClient.post<{ avatar_url: string }>(
-    "/users/profile/image",
-    formData,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
-  );
+  // No explicit Content-Type — fetch has to set the multipart boundary itself.
+  return apiClient.post<UserProfile>("/users/me/avatar", formData);
 }
 
 /**
- * Delete the current user's profile avatar.
+ * Delete the current user's profile avatar. Returns the updated user.
  */
 export async function deleteAvatarAPI(): Promise<void> {
-  return apiClient.delete("/users/profile/image");
+  await apiClient.delete("/users/me/avatar");
 }
 
 /**

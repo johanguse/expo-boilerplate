@@ -63,9 +63,9 @@ export default function Profile() {
 
       <View className="items-center pb-6 px-4">
         <View className="mb-4 relative">
-          {user?.avatar_url ? (
+          {user?.image ? (
             <Image
-              source={{ uri: user.avatar_url }}
+              source={{ uri: user.image }}
               style={{ width: 96, height: 96, borderRadius: 48 }}
               contentFit="cover"
             />
@@ -79,7 +79,7 @@ export default function Profile() {
               </Text>
             </View>
           )}
-          {user?.is_verified && (
+          {user?.emailVerified && (
             <View className="absolute bottom-0 right-0 size-6 bg-success rounded-full border-2 border-background items-center justify-center">
               <SIonicons size={12} name="checkmark" className="text-white" />
             </View>
@@ -91,10 +91,10 @@ export default function Profile() {
         </Text>
         <Text className="text-default-400 text-sm mt-0.5">{user?.email}</Text>
 
-        {user?.role && (
+        {user?.jobTitle && (
           <View className="bg-primary/10 px-3 py-1 rounded-full mt-3">
-            <Text className="text-primary text-xs font-medium capitalize">
-              {user.role}
+            <Text className="text-primary text-xs font-medium">
+              {user.jobTitle}
             </Text>
           </View>
         )}
@@ -120,9 +120,6 @@ export default function Profile() {
             {user?.company && (
               <InfoRow icon="business-outline" value={user.company} />
             )}
-            {user?.job_title && (
-              <InfoRow icon="briefcase-outline" value={user.job_title} />
-            )}
             {user?.phone && <InfoRow icon="call-outline" value={user.phone} />}
             {user?.country && (
               <InfoRow icon="location-outline" value={user.country} />
@@ -141,24 +138,24 @@ export default function Profile() {
             <SIonicons
               size={16}
               name={
-                user?.is_verified
+                user?.emailVerified
                   ? "shield-checkmark-outline"
                   : "shield-outline"
               }
-              className={user?.is_verified ? "text-success" : "text-warning"}
+              className={user?.emailVerified ? "text-success" : "text-warning"}
             />
             <Text className="text-default-foreground text-sm flex-1">
-              {user?.is_verified
+              {user?.emailVerified
                 ? t("profile.emailVerified")
                 : t("profile.emailNotVerified")}
             </Text>
             <View
-              className={`px-2 py-0.5 rounded-full ${user?.is_verified ? "bg-success/10" : "bg-warning/10"}`}
+              className={`px-2 py-0.5 rounded-full ${user?.emailVerified ? "bg-success/10" : "bg-warning/10"}`}
             >
               <Text
-                className={`text-xs font-medium ${user?.is_verified ? "text-success" : "text-warning"}`}
+                className={`text-xs font-medium ${user?.emailVerified ? "text-success" : "text-warning"}`}
               >
-                {user?.is_verified
+                {user?.emailVerified
                   ? t("profile.verified")
                   : t("profile.pending")}
               </Text>
@@ -172,8 +169,8 @@ export default function Profile() {
             />
             <Text className="text-default-foreground text-sm">
               {t("profile.joined")}{" "}
-              {user?.created_at
-                ? new Date(user.created_at).toLocaleDateString("en-US", {
+              {user?.createdAt
+                ? new Date(user.createdAt).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                   })

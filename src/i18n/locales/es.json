@@ -5,7 +5,8 @@
     "error": "Error",
     "save": "Guardar",
     "cancel": "Cancelar",
-    "language": "Idioma"
+    "language": "Idioma",
+    "errorGeneric": "Algo salió mal. Inténtalo de nuevo."
   },
   "languages": {
     "en": "English",
@@ -32,7 +33,9 @@
       "signIn": "Iniciar sesión",
       "errorTitle": "Error al registrarse",
       "successTitle": "¡Bienvenido!",
-      "successMessage": "Cuenta creada exitosamente"
+      "successMessage": "Cuenta creada exitosamente",
+      "verifyTitle": "Revisa tu correo",
+      "verifyMessage": "Te enviamos un enlace de verificaci\u00f3n. Confirma tu direcci\u00f3n y luego inicia sesi\u00f3n."
     },
     "forgotPassword": {
       "title": "Restablecer contraseña",

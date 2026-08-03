@@ -135,13 +135,17 @@ export default function Security() {
           <View className="flex-row items-center px-4 py-4 gap-x-3">
             <View
               className={`size-10 rounded-xl items-center justify-center ${
-                user?.is_verified ? "bg-success/10" : "bg-warning/10"
+                user?.emailVerified ? "bg-success/10" : "bg-warning/10"
               }`}
             >
               <SIonicons
                 size={20}
-                name={user?.is_verified ? "shield-checkmark" : "shield-outline"}
-                className={user?.is_verified ? "text-success" : "text-warning"}
+                name={
+                  user?.emailVerified ? "shield-checkmark" : "shield-outline"
+                }
+                className={
+                  user?.emailVerified ? "text-success" : "text-warning"
+                }
               />
             </View>
             <View className="flex-1">
@@ -151,29 +155,29 @@ export default function Security() {
                 </Text>
                 <View
                   className={`px-2 py-0.5 rounded-full ${
-                    user?.is_verified ? "bg-success/10" : "bg-warning/10"
+                    user?.emailVerified ? "bg-success/10" : "bg-warning/10"
                   }`}
                 >
                   <Text
                     className={`text-xs font-medium ${
-                      user?.is_verified ? "text-success" : "text-warning"
+                      user?.emailVerified ? "text-success" : "text-warning"
                     }`}
                   >
-                    {user?.is_verified
+                    {user?.emailVerified
                       ? t("settings.verified")
                       : t("settings.unverified")}
                   </Text>
                 </View>
               </View>
               <Text className="text-xs text-default-400 mt-0.5">
-                {user?.is_verified
+                {user?.emailVerified
                   ? t("security.verifiedDesc")
                   : t("security.unverifiedDesc")}
               </Text>
             </View>
           </View>
 
-          {!user?.is_verified && (
+          {!user?.emailVerified && (
             <>
               <Divider />
               <Pressable
@@ -221,8 +225,8 @@ export default function Security() {
                 {t("security.sessionsDesc")}
               </Text>
               <Text className="text-xs text-default-400 mt-0.5">
-                {user?.created_at
-                  ? `Since ${new Date(user.created_at).toLocaleDateString()}`
+                {user?.createdAt
+                  ? `Since ${new Date(user.createdAt).toLocaleDateString()}`
                   : "—"}
               </Text>
             </View>

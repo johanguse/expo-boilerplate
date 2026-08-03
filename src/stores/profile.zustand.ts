@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@api/client";
 import {
   deleteAvatarAPI,
   type UpdateProfilePayload,
@@ -30,13 +31,7 @@ const useProfileStore = create<ProfileState>((set) => ({
       // Sync the updated user back into the auth store
       useAuthManage.getState().setUser(updated);
     } catch (err: unknown) {
-      const message =
-        err && typeof err === "object" && "detail" in err
-          ? String((err as { detail?: string }).detail)
-          : err instanceof Error
-            ? err.message
-            : "Failed to update profile";
-      set({ error: message });
+      set({ error: getErrorMessage(err, "Failed to update profile") });
       throw err;
     } finally {
       set({ isUpdating: false });
@@ -46,22 +41,12 @@ const useProfileStore = create<ProfileState>((set) => ({
   uploadAvatar: async (fileUri) => {
     set({ isUploadingAvatar: true, error: null });
     try {
-      const result = await uploadAvatarAPI(fileUri);
-      const currentUser = useAuthManage.getState().user;
-      if (currentUser) {
-        useAuthManage.getState().setUser({
-          ...currentUser,
-          avatar_url: result.avatar_url,
-        });
-      }
+      // The endpoint returns the whole updated user, so there's no second round
+      // trip to pick up the new avatar URL.
+      const updated = await uploadAvatarAPI(fileUri);
+      useAuthManage.getState().setUser(updated);
     } catch (err: unknown) {
-      const message =
-        err && typeof err === "object" && "detail" in err
-          ? String((err as { detail?: string }).detail)
-          : err instanceof Error
-            ? err.message
-            : "Failed to upload avatar";
-      set({ error: message });
+      set({ error: getErrorMessage(err, "Failed to upload avatar") });
       throw err;
     } finally {
       set({ isUploadingAvatar: false });
@@ -74,19 +59,10 @@ const useProfileStore = create<ProfileState>((set) => ({
       await deleteAvatarAPI();
       const currentUser = useAuthManage.getState().user;
       if (currentUser) {
-        useAuthManage.getState().setUser({
-          ...currentUser,
-          avatar_url: null,
-        });
+        useAuthManage.getState().setUser({ ...currentUser, image: null });
       }
     } catch (err: unknown) {
-      const message =
-        err && typeof err === "object" && "detail" in err
-          ? String((err as { detail?: string }).detail)
-          : err instanceof Error
-            ? err.message
-            : "Failed to delete avatar";
-      set({ error: message });
+      set({ error: getErrorMessage(err, "Failed to delete avatar") });
       throw err;
     } finally {
       set({ isUploadingAvatar: false });

@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@api/client";
 import { SIonicons } from "@components/common/Icons";
 import LanguageSwitcher from "@components/common/LanguageSwitcher";
 import FormButton from "@components/form/FormButton";
@@ -40,12 +41,10 @@ export default function Login() {
       try {
         await signIn(value.email, value.password);
       } catch (error: unknown) {
-        const err = error as { detail?: string; message?: string };
         toast.show({
           label: t("auth.login.errorTitle"),
           variant: "danger",
-          description:
-            err?.detail ?? err?.message ?? t("auth.login.errorTitle"),
+          description: getErrorMessage(error, t("common.errorGeneric")),
         });
       }
     },

@@ -3,7 +3,7 @@ import ChatInput from "@components/chat/ChatInput";
 import StreamingIndicator from "@components/chat/StreamingIndicator";
 import { SIonicons } from "@components/common/Icons";
 import { useTranslation } from "@i18n";
-import { LegendList } from "@legendapp/list";
+import { LegendList } from "@legendapp/list/react-native";
 import type { Message } from "@stores/chat.zustand";
 import useChatStore from "@stores/chat.zustand";
 import { Button } from "heroui-native/button";

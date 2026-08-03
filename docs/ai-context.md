@@ -4,10 +4,11 @@ This file is the **single overview** of architecture and conventions for agents 
 
 ## Auth
 
-- **Backend:** [FastAPI Users](https://fastapi-users.github.io/fastapi-users/) style API: `POST` login/register, `GET /api/v1/users/me` with **JWT** bearer auth.
-- **Client:** Access token in **MMKV** (`@lib/storage`, `StorageKeys.ACCESS_TOKEN`). **Zustand** store: `@stores/auth.zustand` (`useAuthManage`) holds session, `initialize()` on app start, `signOut` on 401.
-- **HTTP:** `@api/client` `apiClient` injects `Authorization: Bearer <token>` for all requests except `noAuth: true`.
-- There is **no** Better Auth in this app path; the contract is **JWT to FastAPI** (or a compatible Hono stack).
+- **Backend:** [`cloudflare-backend-app-boilerplate`](https://github.com/johanguse/cloudflare-backend-app-boilerplate) — Workers + Hono + D1 + Better Auth, on `http://localhost:8787` in dev. `POST /api/v1/auth/{login,register,refresh,logout}`, `GET /api/v1/users/me`, **JWT** bearer auth.
+- **Envelopes:** success is `{ data: … }`, failure is `{ error: { code, message } }`. `@api/client` unwraps the first and turns the second into an `ApiError` with `.status`, `.code`, `.message`. `message` is already user-facing; branch on `code` (`ApiErrorCode`).
+- **Client:** Access token (15-minute JWT) and refresh token (30-day session token) in **MMKV** (`@lib/storage`, `StorageKeys.ACCESS_TOKEN` / `REFRESH_TOKEN`). **Zustand** store: `@stores/auth.zustand` (`useAuthManage`) holds session, `initialize()` on app start.
+- **HTTP:** `apiClient` injects `Authorization: Bearer <token>` for all requests except `noAuth: true`. A `401` triggers **one** refresh (shared across concurrent 401s) and replays the request; `signOut` only when that fails. Calls made *during* sign-out pass `skipSessionRecovery: true` to avoid recursion.
+- Better Auth runs **on the server only** — the app never imports its client SDK; the contract is plain JWT over the routes above.
 
 ## Folder layout (current)
 
@@ -46,7 +47,7 @@ In `src/app/_layout.tsx` (simplified, outermost first):
 
 - **Remote:** FCM via `@react-native-firebase/messaging`. Foreground: `messaging().onMessage` → local display with **react-native-notify-kit** (`src/lib/notifications.ts`: channels + `displayLocalNotification`).
 - **Hook:** `useNotifications(permission)` — registers channels, subscribes to `onMessage` when permission is **granted**, syncs FCM `getToken` to the backend when **signed in** + **granted**; iOS uses `registerDeviceForRemoteMessages()` before `getToken`. **Web:** no-ops.
-- **Backend:** `POST /api/v1/users/me/push-token` with JSON `{ "token": "<fcm>" }` — **204** on success. Implemented in **fastapi-boilerplate-backend** and **bun-hono-backend-boiplerplate**. Token is **not** returned on `GET /users/me` (treat as secret).
+- **Backend:** `POST /api/v1/users/me/devices` with JSON `{ "token": "<fcm>", "platform": "ios" | "android" }`; `DELETE /api/v1/users/me/devices/:token` on sign-out. Token is **not** returned on `GET /users/me` (treat as secret).
 - **iOS:** APNs key in Firebase, Xcode capabilities **Push Notifications** + **Background Modes → Remote notifications**, then dev build (not Expo Go). See `README.md` for plist / `google-services` placement.
 
 ## Firebase (`src/lib/firebase.ts`)

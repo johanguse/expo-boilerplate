@@ -2,68 +2,100 @@ import { apiClient } from "./client";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+/**
+ * Returned by login/register. `accessToken` is a short-lived (15m) JWT;
+ * `refreshToken` is the long-lived session token used against `/auth/refresh`.
+ * Both are null when registration completes but email verification is required
+ * before a session is issued.
+ */
 export interface AuthToken {
-  access_token: string;
-  token_type: string;
+  accessToken: string | null;
+  refreshToken: string | null;
+}
+
+export interface AuthSession extends AuthToken {
+  user: UserProfile;
 }
 
 export interface UserProfile {
-  id: number;
+  id: string;
   email: string;
-  name: string | null;
-  role: string;
-  status: string;
-  created_at: string;
-  updated_at: string | null;
-  avatar_url: string | null;
-  phone: string | null;
+  name: string;
+  emailVerified: boolean;
+  /** Avatar URL, already resolved by the backend — safe to use directly. */
+  image: string | null;
+  bio: string | null;
   company: string | null;
-  job_title: string | null;
+  jobTitle: string | null;
+  phone: string | null;
+  website: string | null;
   country: string | null;
   timezone: string | null;
-  bio: string | null;
-  website: string | null;
-  onboarding_completed: boolean;
-  onboarding_step: number;
-  is_active: boolean;
-  is_verified: boolean;
-  is_superuser: boolean;
+  onboardingCompleted: boolean;
+  onboardingStep: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface RegisterPayload {
   email: string;
   password: string;
-  name?: string;
+  name: string;
 }
 
 // ─── API Calls ───────────────────────────────────────────────────────────────
 
 /**
  * Login with email & password.
- * fastapi-users expects `application/x-www-form-urlencoded` with `username` field.
  */
 export async function loginAPI(
   email: string,
   password: string,
-): Promise<AuthToken> {
-  const form = new URLSearchParams();
-  form.append("username", email);
-  form.append("password", password);
-
-  return apiClient.post<AuthToken>("/auth/jwt/login", undefined, {
-    noAuth: true,
-    formData: form,
-  });
+): Promise<AuthSession> {
+  return apiClient.post<AuthSession>(
+    "/auth/login",
+    { email, password },
+    { noAuth: true },
+  );
 }
 
 /**
  * Register a new user account.
+ *
+ * Returns a session directly when the backend is running with email
+ * verification off (the default locally); otherwise the tokens are null and the
+ * user must verify before signing in.
  */
 export async function registerAPI(
   payload: RegisterPayload,
-): Promise<UserProfile> {
-  return apiClient.post<UserProfile>("/auth/register", payload, {
+): Promise<AuthSession> {
+  return apiClient.post<AuthSession>("/auth/register", payload, {
     noAuth: true,
+  });
+}
+
+/**
+ * Exchange a refresh token for a fresh access token.
+ */
+export async function refreshTokenAPI(
+  refreshToken: string,
+): Promise<AuthToken> {
+  return apiClient.post<AuthToken>(
+    "/auth/refresh",
+    { refreshToken },
+    { noAuth: true },
+  );
+}
+
+/**
+ * Revoke the current session server-side.
+ *
+ * `skipSessionRecovery` matters here: this runs while signing out, so a 401
+ * must not kick off a token refresh or re-enter the sign-out handler.
+ */
+export async function logoutAPI(): Promise<void> {
+  await apiClient.post("/auth/logout", undefined, {
+    skipSessionRecovery: true,
   });
 }
 
@@ -71,7 +103,7 @@ export async function registerAPI(
  * Request a password reset email.
  */
 export async function forgotPasswordAPI(email: string): Promise<void> {
-  return apiClient.post("/auth/forgot-password", { email }, { noAuth: true });
+  await apiClient.post("/auth/forgot-password", { email }, { noAuth: true });
 }
 
 /**
@@ -89,8 +121,8 @@ export async function changePasswordAPI(
   newPassword: string,
 ): Promise<{ success: boolean; message: string }> {
   return apiClient.post("/users/me/change-password", {
-    current_password: currentPassword,
-    new_password: newPassword,
+    currentPassword,
+    newPassword,
   });
 }
 
@@ -100,5 +132,9 @@ export async function changePasswordAPI(
 export async function resendVerificationAPI(
   email: string,
 ): Promise<{ success: boolean; message: string }> {
-  return apiClient.post("/resend-verification", { email }, { noAuth: true });
+  return apiClient.post(
+    "/auth/resend-verification",
+    { email },
+    { noAuth: true },
+  );
 }

@@ -130,7 +130,7 @@ export default function Settings() {
           icon="shield-checkmark-outline"
           label={t("settings.security")}
           value={
-            user?.is_verified
+            user?.emailVerified
               ? t("settings.verified")
               : t("settings.unverified")
           }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@api/client";
 import { SIonicons } from "@components/common/Icons";
 import LanguageSwitcher from "@components/common/LanguageSwitcher";
 import FormButton from "@components/form/FormButton";
@@ -49,19 +50,34 @@ export default function Signup() {
     validators: { onSubmit: signupSchema },
     onSubmit: async ({ value }) => {
       try {
-        await signUp(value.email, value.password, value.name);
+        const { needsVerification } = await signUp(
+          value.email,
+          value.password,
+          value.name,
+        );
+
+        // With email verification on, the account exists but there's no session
+        // yet — send them back to sign in once they've confirmed the address.
+        if (needsVerification) {
+          toast.show({
+            label: t("auth.signup.verifyTitle"),
+            variant: "default",
+            description: t("auth.signup.verifyMessage"),
+          });
+          router.back();
+          return;
+        }
+
         toast.show({
           label: t("auth.signup.successTitle"),
           variant: "success",
           description: t("auth.signup.successMessage"),
         });
       } catch (error: unknown) {
-        const err = error as { detail?: string; message?: string };
         toast.show({
           label: t("auth.signup.errorTitle"),
           variant: "danger",
-          description:
-            err?.detail ?? err?.message ?? t("auth.signup.errorTitle"),
+          description: getErrorMessage(error, t("common.errorGeneric")),
         });
       }
     },

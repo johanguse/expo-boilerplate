@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@api/client";
 import { SIonicons } from "@components/common/Icons";
 import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
@@ -23,7 +24,7 @@ const editProfileSchema = z.object({
   name: z.string(),
   bio: z.string(),
   company: z.string(),
-  job_title: z.string(),
+  jobTitle: z.string(),
   phone: z.string(),
   website: z.string(),
   country: z.string(),
@@ -43,7 +44,7 @@ export default function EditProfile() {
       name: user?.name ?? "",
       bio: user?.bio ?? "",
       company: user?.company ?? "",
-      job_title: user?.job_title ?? "",
+      jobTitle: user?.jobTitle ?? "",
       phone: user?.phone ?? "",
       website: user?.website ?? "",
       country: user?.country ?? "",
@@ -52,15 +53,18 @@ export default function EditProfile() {
     validators: { onSubmit: editProfileSchema },
     onSubmit: async ({ value }) => {
       try {
+        // Optional fields are sent as-is: the backend trims them and stores an
+        // empty string as null, so clearing a field actually clears it. `name`
+        // is the exception — the backend requires it to be non-empty.
         await updateProfile({
           name: value.name || undefined,
-          bio: value.bio || undefined,
-          company: value.company || undefined,
-          job_title: value.job_title || undefined,
-          phone: value.phone || undefined,
-          website: value.website || undefined,
-          country: value.country || undefined,
-          timezone: value.timezone || undefined,
+          bio: value.bio,
+          company: value.company,
+          jobTitle: value.jobTitle,
+          phone: value.phone,
+          website: value.website,
+          country: value.country,
+          timezone: value.timezone,
         });
         toast.show({
           label: t("editProfile.successTitle"),
@@ -69,11 +73,10 @@ export default function EditProfile() {
         });
         router.back();
       } catch (err: unknown) {
-        const e = err as { detail?: string; message?: string };
         toast.show({
           label: t("editProfile.errorTitle"),
           variant: "danger",
-          description: e?.detail ?? e?.message ?? t("editProfile.errorMessage"),
+          description: getErrorMessage(err, t("editProfile.errorMessage")),
         });
       }
     },
@@ -159,7 +162,7 @@ export default function EditProfile() {
           )}
         </form.Field>
 
-        <form.Field name="job_title">
+        <form.Field name="jobTitle">
           {(field) => (
             <FormInput
               field={field}

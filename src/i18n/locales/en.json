@@ -5,7 +5,8 @@
     "error": "Error",
     "save": "Save",
     "cancel": "Cancel",
-    "language": "Language"
+    "language": "Language",
+    "errorGeneric": "Something went wrong. Please try again."
   },
   "languages": {
     "en": "English",
@@ -32,7 +33,9 @@
       "signIn": "Sign in",
       "errorTitle": "Sign up failed",
       "successTitle": "Welcome!",
-      "successMessage": "Account created successfully"
+      "successMessage": "Account created successfully",
+      "verifyTitle": "Check your email",
+      "verifyMessage": "We sent you a verification link. Confirm your address, then sign in."
     },
     "forgotPassword": {
       "title": "Reset password",

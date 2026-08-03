@@ -5,7 +5,8 @@
     "error": "Erro",
     "save": "Salvar",
     "cancel": "Cancelar",
-    "language": "Idioma"
+    "language": "Idioma",
+    "errorGeneric": "Algo deu errado. Tente novamente."
   },
   "languages": {
     "en": "English",
@@ -32,7 +33,9 @@
       "signIn": "Entrar",
       "errorTitle": "Falha ao cadastrar",
       "successTitle": "Bem-vindo!",
-      "successMessage": "Conta criada com sucesso"
+      "successMessage": "Conta criada com sucesso",
+      "verifyTitle": "Verifique seu e-mail",
+      "verifyMessage": "Enviamos um link de verifica\u00e7\u00e3o. Confirme seu endere\u00e7o e depois entre."
     },
     "forgotPassword": {
       "title": "Redefinir senha",

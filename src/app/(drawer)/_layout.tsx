@@ -11,7 +11,7 @@ export default function DrawerLayout() {
           drawerType: 'front',
           drawerStyle: { width: 270 },
           overlayColor: 'rgba(0,0,0,0.5)',
-          gestureEnabled: true,
+          swipeEnabled: true,
           swipeEdgeWidth: 40,
         }}
         drawerContent={(props) => <CustomDrawer {...props} />}

@@ -1,8 +1,9 @@
 /**
  * Tests for the auth API module (src/api/auth.ts)
  *
- * These tests verify the auth API functions properly format requests
- * for the FastAPI backend (fastapi-users).
+ * These verify each call targets the right Cloudflare Worker route with the
+ * right body. Response shapes are already unwrapped by the client, so the
+ * mocks return the payload the backend puts inside `{ data: … }`.
  */
 
 jest.mock("@api/client", () => ({
@@ -12,22 +13,46 @@ jest.mock("@api/client", () => ({
   },
   ApiError: class ApiError extends Error {
     status: number;
-    detail: string;
-    constructor(status: number, detail: string) {
-      super(detail);
+    code: string;
+    constructor(status: number, message: string, code = "UNKNOWN") {
+      super(message);
       this.status = status;
-      this.detail = detail;
+      this.code = code;
     }
   },
 }));
 
 import {
+  changePasswordAPI,
   forgotPasswordAPI,
   getCurrentUser,
   loginAPI,
+  logoutAPI,
+  refreshTokenAPI,
   registerAPI,
+  resendVerificationAPI,
 } from "@api/auth";
 import { apiClient } from "@api/client";
+
+/** A `publicUserRow` payload as the backend serialises it. */
+const userFixture = {
+  id: "usr_123",
+  email: "me@test.com",
+  name: "Current User",
+  emailVerified: true,
+  image: null,
+  bio: null,
+  company: null,
+  jobTitle: null,
+  phone: null,
+  website: null,
+  country: null,
+  timezone: null,
+  onboardingCompleted: false,
+  onboardingStep: 0,
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -35,39 +60,32 @@ beforeEach(() => {
 
 describe("Auth API", () => {
   describe("loginAPI", () => {
-    it("should call POST /auth/jwt/login with form-urlencoded data", async () => {
-      const mockToken = { access_token: "jwt-token-123", token_type: "bearer" };
-      (apiClient.post as jest.Mock).mockResolvedValue(mockToken);
+    it("posts /auth/login and returns a session with both tokens", async () => {
+      const session = {
+        accessToken: "jwt-token-123",
+        refreshToken: "session-token-456",
+        user: userFixture,
+      };
+      (apiClient.post as jest.Mock).mockResolvedValue(session);
 
       const result = await loginAPI("user@test.com", "password123");
 
       expect(apiClient.post).toHaveBeenCalledWith(
-        "/auth/jwt/login",
-        undefined,
-        expect.objectContaining({
-          noAuth: true,
-          formData: expect.any(URLSearchParams),
-        }),
+        "/auth/login",
+        { email: "user@test.com", password: "password123" },
+        { noAuth: true },
       );
-
-      const formData = (apiClient.post as jest.Mock).mock.calls[0][2]
-        .formData as URLSearchParams;
-      expect(formData.get("username")).toBe("user@test.com");
-      expect(formData.get("password")).toBe("password123");
-
-      expect(result).toEqual(mockToken);
+      expect(result).toEqual(session);
     });
   });
 
   describe("registerAPI", () => {
-    it("should call POST /auth/register with JSON body", async () => {
-      const mockUser = {
-        id: 1,
-        email: "new@test.com",
-        name: "Test User",
-        is_active: true,
-      };
-      (apiClient.post as jest.Mock).mockResolvedValue(mockUser);
+    it("posts /auth/register with email, password and name", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValue({
+        accessToken: "jwt",
+        refreshToken: "session",
+        user: { ...userFixture, email: "new@test.com" },
+      });
 
       const result = await registerAPI({
         email: "new@test.com",
@@ -84,27 +102,60 @@ describe("Auth API", () => {
         },
         { noAuth: true },
       );
-      expect(result.email).toBe("new@test.com");
+      expect(result.user.email).toBe("new@test.com");
     });
 
-    it("should work without optional name field", async () => {
-      (apiClient.post as jest.Mock).mockResolvedValue({ id: 1 });
-
-      await registerAPI({
-        email: "noname@test.com",
-        password: "password",
+    it("returns null tokens when the account needs email verification", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValue({
+        accessToken: null,
+        refreshToken: null,
+        user: { ...userFixture, emailVerified: false },
       });
 
+      const result = await registerAPI({
+        email: "unverified@test.com",
+        password: "securepass123",
+        name: "Test User",
+      });
+
+      expect(result.accessToken).toBeNull();
+      expect(result.refreshToken).toBeNull();
+    });
+  });
+
+  describe("refreshTokenAPI", () => {
+    it("posts /auth/refresh without the (expired) access token", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValue({
+        accessToken: "fresh-jwt",
+        refreshToken: "session-token-456",
+      });
+
+      const result = await refreshTokenAPI("session-token-456");
+
       expect(apiClient.post).toHaveBeenCalledWith(
-        "/auth/register",
-        { email: "noname@test.com", password: "password" },
+        "/auth/refresh",
+        { refreshToken: "session-token-456" },
         { noAuth: true },
       );
+      expect(result.accessToken).toBe("fresh-jwt");
+    });
+  });
+
+  describe("logoutAPI", () => {
+    it("posts /auth/logout with session recovery disabled", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValue(undefined);
+
+      await logoutAPI();
+
+      // A 401 here must not refresh or re-enter sign-out.
+      expect(apiClient.post).toHaveBeenCalledWith("/auth/logout", undefined, {
+        skipSessionRecovery: true,
+      });
     });
   });
 
   describe("forgotPasswordAPI", () => {
-    it("should call POST /auth/forgot-password with email", async () => {
+    it("posts /auth/forgot-password with the email", async () => {
       (apiClient.post as jest.Mock).mockResolvedValue(undefined);
 
       await forgotPasswordAPI("forgot@test.com");
@@ -117,20 +168,48 @@ describe("Auth API", () => {
     });
   });
 
+  describe("resendVerificationAPI", () => {
+    it("posts /auth/resend-verification with the email", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValue({
+        success: true,
+        message: "Verification email sent.",
+      });
+
+      await resendVerificationAPI("unverified@test.com");
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        "/auth/resend-verification",
+        { email: "unverified@test.com" },
+        { noAuth: true },
+      );
+    });
+  });
+
+  describe("changePasswordAPI", () => {
+    it("posts /users/me/change-password with camelCase keys", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValue({
+        success: true,
+        message: "Password updated.",
+      });
+
+      await changePasswordAPI("old-password", "new-password");
+
+      expect(apiClient.post).toHaveBeenCalledWith("/users/me/change-password", {
+        currentPassword: "old-password",
+        newPassword: "new-password",
+      });
+    });
+  });
+
   describe("getCurrentUser", () => {
-    it("should call GET /users/me with auth token", async () => {
-      const mockUser = {
-        id: 1,
-        email: "me@test.com",
-        name: "Current User",
-        role: "member",
-      };
-      (apiClient.get as jest.Mock).mockResolvedValue(mockUser);
+    it("gets /users/me with the auth token", async () => {
+      (apiClient.get as jest.Mock).mockResolvedValue(userFixture);
 
       const result = await getCurrentUser();
 
       expect(apiClient.get).toHaveBeenCalledWith("/users/me");
       expect(result.email).toBe("me@test.com");
+      expect(result.onboardingCompleted).toBe(false);
     });
   });
 });

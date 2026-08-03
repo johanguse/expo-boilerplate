@@ -7,43 +7,116 @@ interface RequestOptions {
   headers?: Record<string, string>;
   /** If true, skip the Authorization header */
   noAuth?: boolean;
+  /**
+   * If true, a 401 neither refreshes the token nor triggers sign-out — it just
+   * throws. Needed for calls made *during* sign-out, which would otherwise
+   * recurse back into it.
+   */
+  skipSessionRecovery?: boolean;
   /** If provided, send as form-urlencoded instead of JSON */
   formData?: URLSearchParams;
 }
 
-// Human-readable messages for fastapi-users error codes
-const FRIENDLY_ERRORS: Record<string, string> = {
-  LOGIN_BAD_CREDENTIALS: "Invalid email or password.",
-  LOGIN_USER_NOT_VERIFIED: "Please verify your email before signing in.",
-  REGISTER_USER_ALREADY_EXISTS: "An account with this email already exists.",
-  RESET_PASSWORD_BAD_TOKEN: "This reset link is invalid or has expired.",
-  RESET_PASSWORD_INVALID_PASSWORD: "New password does not meet requirements.",
-  VERIFY_USER_ALREADY_VERIFIED: "Your email is already verified.",
-  VERIFY_USER_BAD_TOKEN: "This verification link is invalid or has expired.",
-  UPDATE_USER_EMAIL_ALREADY_EXISTS: "This email is already in use.",
-  UPDATE_USER_INVALID_PASSWORD: "Current password is incorrect.",
-};
-
+/**
+ * A failed API call.
+ *
+ * The backend returns `{ error: { code, message } }` where `message` is already
+ * user-facing English (see `lib/messages.ts` there), so it's shown as-is rather
+ * than remapped here. `code` is the stable identifier to branch on — it does
+ * not change when the wording does.
+ */
 export class ApiError extends Error {
   status: number;
-  detail: string;
+  code: string;
 
-  constructor(status: number, detail: string) {
-    const friendly = FRIENDLY_ERRORS[detail] ?? detail;
-    super(friendly);
+  constructor(status: number, message: string, code = "UNKNOWN") {
+    super(message);
     this.name = "ApiError";
     this.status = status;
-    this.detail = friendly;
+    this.code = code;
   }
 }
 
+/** Error codes worth branching on, rather than just displaying. */
+export const ApiErrorCode = {
+  EmailNotVerified: "EMAIL_NOT_VERIFIED",
+  InvalidCredentials: "INVALID_EMAIL_OR_PASSWORD",
+  EmailAlreadyExists: "USER_ALREADY_EXISTS",
+  Unauthorized: "UNAUTHORIZED",
+  RateLimited: "RATE_LIMIT_EXCEEDED",
+  ValidationError: "VALIDATION_ERROR",
+} as const;
+
+/** Longest server message we're willing to render in a toast. */
+const MAX_DISPLAY_MESSAGE_LENGTH = 120;
+
+/** Developer-facing noise: JSON blobs, stack frames, native error domains. */
+const NOISY_MESSAGE = /^[[{]|Error Domain=|\bat\s+\S+:\d+:\d+/;
+
+/**
+ * Pick a message safe to show a user.
+ *
+ * Server `detail` strings are unbounded and often developer-facing — a stack
+ * trace or serialized error dumped into a toast is unreadable. Anything long
+ * or noisy is dropped in favour of `fallback`; the original still reaches the
+ * console for debugging.
+ */
+export function getErrorMessage(error: unknown, fallback: string): string {
+  const raw =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "";
+
+  const message = raw.trim().replace(/\s+/g, " ");
+
+  if (
+    !message ||
+    message.length > MAX_DISPLAY_MESSAGE_LENGTH ||
+    NOISY_MESSAGE.test(message)
+  ) {
+    if (message && typeof __DEV__ !== "undefined" && __DEV__) {
+      console.warn("[api] suppressed error message in UI:", message);
+    }
+    return fallback;
+  }
+
+  return message;
+}
+
 // ---------------------------------------------------------------------------
-// Unauthorized callback — set by the auth store to avoid circular imports
+// Session callbacks — set by the auth store to avoid circular imports
 // ---------------------------------------------------------------------------
 let _onUnauthorized: (() => void) | null = null;
+let _refreshSession: (() => Promise<boolean>) | null = null;
 
 export function setUnauthorizedHandler(handler: () => void): void {
   _onUnauthorized = handler;
+}
+
+/**
+ * Register how to mint a fresh access token. Resolves `true` when a new token
+ * has been written to storage, `false` when the session is unrecoverable.
+ */
+export function setRefreshHandler(handler: () => Promise<boolean>): void {
+  _refreshSession = handler;
+}
+
+/**
+ * In-flight refresh, shared so a burst of concurrent 401s triggers one refresh
+ * rather than one per request (which would invalidate each other's tokens).
+ */
+let _refreshInFlight: Promise<boolean> | null = null;
+
+function refreshOnce(): Promise<boolean> {
+  if (!_refreshSession) return Promise.resolve(false);
+  if (!_refreshInFlight) {
+    _refreshInFlight = _refreshSession().finally(() => {
+      _refreshInFlight = null;
+    });
+  }
+  return _refreshInFlight;
 }
 
 // ---------------------------------------------------------------------------
@@ -54,6 +127,8 @@ async function request<T>(
   path: string,
   body?: unknown,
   options?: RequestOptions,
+  /** Internal: set when replaying a request after a token refresh. */
+  isRetry = false,
 ): Promise<T> {
   const url = path.startsWith("http") ? path : `${API_V1}${path}`;
 
@@ -68,12 +143,15 @@ async function request<T>(
     }
   }
 
-  let fetchBody: string | URLSearchParams | undefined;
+  let fetchBody: BodyInit | undefined;
 
   if (options?.formData) {
-    headers["Content-Type"] = "application/x-www-form-urlencoded";
     // React Native fetch doesn't auto-serialize URLSearchParams — must call .toString()
+    headers["Content-Type"] = "application/x-www-form-urlencoded";
     fetchBody = options.formData.toString();
+  } else if (body instanceof FormData) {
+    // Let fetch set the multipart boundary itself.
+    fetchBody = body;
   } else if (body !== undefined) {
     headers["Content-Type"] = "application/json";
     fetchBody = JSON.stringify(body);
@@ -90,10 +168,23 @@ async function request<T>(
     return undefined as T;
   }
 
-  // 401 Unauthorized → trigger sign-out
-  if (response.status === 401 && !options?.noAuth) {
+  // 401 Unauthorized → refresh the 15-minute access token and replay once.
+  // A FormData body can't be safely replayed (the stream is consumed), so those
+  // fall through to sign-out instead.
+  if (
+    response.status === 401 &&
+    !options?.noAuth &&
+    !options?.skipSessionRecovery
+  ) {
+    if (!isRetry && !(body instanceof FormData) && (await refreshOnce())) {
+      return request<T>(method, path, body, options, true);
+    }
     _onUnauthorized?.();
-    throw new ApiError(401, "Session expired. Please sign in again.");
+    throw new ApiError(
+      401,
+      "Session expired. Please sign in again.",
+      ApiErrorCode.Unauthorized,
+    );
   }
 
   let data: unknown;
@@ -104,26 +195,46 @@ async function request<T>(
   }
 
   if (!response.ok) {
-    const rawDetail = (data as { detail?: unknown })?.detail;
-    let detail: string;
-
-    if (Array.isArray(rawDetail)) {
-      // FastAPI validation errors: [{type, loc, msg, input}, ...]
-      detail = rawDetail
-        .map((e: { msg?: string }) => e?.msg ?? String(e))
-        .join(". ");
-    } else if (typeof rawDetail === "string") {
-      detail = rawDetail;
-    } else if (typeof data === "string") {
-      detail = data;
-    } else {
-      detail = `Request failed (${response.status})`;
-    }
-
-    throw new ApiError(response.status, detail);
+    throw toApiError(response.status, data);
   }
 
-  return data as T;
+  return unwrapEnvelope(data) as T;
+}
+
+/**
+ * The backend wraps every success in `{ data: … }`. Unwrap it so call sites see
+ * the payload directly; anything unwrapped (or a bare value) passes through.
+ */
+function unwrapEnvelope(data: unknown): unknown {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    !Array.isArray(data) &&
+    "data" in data
+  ) {
+    return (data as { data: unknown }).data;
+  }
+  return data;
+}
+
+/** Build an ApiError from a `{ error: { code, message } }` body. */
+function toApiError(status: number, data: unknown): ApiError {
+  const error = (data as { error?: { code?: unknown; message?: unknown } })
+    ?.error;
+
+  if (typeof error?.message === "string" && error.message.length > 0) {
+    return new ApiError(
+      status,
+      error.message,
+      typeof error.code === "string" ? error.code : "UNKNOWN",
+    );
+  }
+
+  if (typeof data === "string" && data.length > 0) {
+    return new ApiError(status, data);
+  }
+
+  return new ApiError(status, `Request failed (${status})`);
 }
 
 export const apiClient = {

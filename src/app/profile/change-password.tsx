@@ -1,4 +1,5 @@
 import { changePasswordAPI } from "@api/auth";
+import { getErrorMessage } from "@api/client";
 import { SIonicons } from "@components/common/Icons";
 import FormButton from "@components/form/FormButton";
 import FormInput from "@components/form/FormInput";
@@ -57,12 +58,10 @@ export default function ChangePassword() {
         });
         router.back();
       } catch (err: unknown) {
-        const e = err as { detail?: string; message?: string };
         toast.show({
           label: t("changePassword.errorTitle"),
           variant: "danger",
-          description:
-            e?.detail ?? e?.message ?? t("changePassword.errorTitle"),
+          description: getErrorMessage(err, t("common.errorGeneric")),
         });
       }
     },

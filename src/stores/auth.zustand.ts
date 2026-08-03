@@ -1,11 +1,13 @@
 import {
-  type AuthToken,
+  type AuthSession,
   getCurrentUser,
   loginAPI,
+  logoutAPI,
+  refreshTokenAPI,
   registerAPI,
   type UserProfile,
 } from "@api/auth";
-import { setUnauthorizedHandler } from "@api/client";
+import { setRefreshHandler, setUnauthorizedHandler } from "@api/client";
 import { StorageKeys, storage } from "@lib/storage";
 import { create } from "zustand";
 
@@ -16,20 +18,45 @@ type AuthState = {
   isLogin: boolean;
   /** Current user profile */
   user: UserProfile | null;
-  /** JWT access token */
+  /** Short-lived (15m) JWT access token */
   token: string | null;
 
   /** Restore session from persisted storage (call on app start) */
   initialize: () => Promise<void>;
   /** Sign in with email + password */
   signIn: (email: string, password: string) => Promise<void>;
-  /** Create account then auto-login */
-  signUp: (email: string, password: string, name?: string) => Promise<void>;
+  /**
+   * Create an account. Resolves `{ needsVerification: true }` when the backend
+   * requires email confirmation before issuing a session — the user is *not*
+   * signed in in that case.
+   */
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+  ) => Promise<{ needsVerification: boolean }>;
   /** Clear session */
   signOut: () => void;
   /** Update the cached user object (after profile edits) */
   setUser: (user: UserProfile) => void;
 };
+
+function persistTokens(session: {
+  accessToken: string | null;
+  refreshToken: string | null;
+}): void {
+  if (session.accessToken) {
+    storage.set(StorageKeys.ACCESS_TOKEN, session.accessToken);
+  }
+  if (session.refreshToken) {
+    storage.set(StorageKeys.REFRESH_TOKEN, session.refreshToken);
+  }
+}
+
+function clearTokens(): void {
+  storage.remove(StorageKeys.ACCESS_TOKEN);
+  storage.remove(StorageKeys.REFRESH_TOKEN);
+}
 
 const useAuthManage = create<AuthState>((set, get) => ({
   isLoading: true,
@@ -38,8 +65,22 @@ const useAuthManage = create<AuthState>((set, get) => ({
   token: null,
 
   initialize: async () => {
-    // Wire the 401 handler so the API client can sign out without a circular import
+    // Wire the session callbacks so the API client can refresh or sign out
+    // without importing this store (which would be circular).
     setUnauthorizedHandler(() => get().signOut());
+    setRefreshHandler(async () => {
+      const refreshToken = storage.getString(StorageKeys.REFRESH_TOKEN);
+      if (!refreshToken) return false;
+      try {
+        const tokens = await refreshTokenAPI(refreshToken);
+        if (!tokens.accessToken) return false;
+        persistTokens(tokens);
+        set({ token: tokens.accessToken });
+        return true;
+      } catch {
+        return false;
+      }
+    });
 
     try {
       const storedToken = storage.getString(StorageKeys.ACCESS_TOKEN);
@@ -49,30 +90,44 @@ const useAuthManage = create<AuthState>((set, get) => ({
       }
 
       set({ token: storedToken });
+      // A 401 here is handled by the client: it refreshes and replays once,
+      // and only throws if the refresh token is gone or rejected too.
       const user = await getCurrentUser();
-      set({ isLogin: true, user, token: storedToken, isLoading: false });
+      set({ isLogin: true, user, isLoading: false });
     } catch {
-      storage.remove(StorageKeys.ACCESS_TOKEN);
+      clearTokens();
       set({ isLogin: false, user: null, token: null, isLoading: false });
     }
   },
 
   signIn: async (email, password) => {
-    const tokenData: AuthToken = await loginAPI(email, password);
-    storage.set(StorageKeys.ACCESS_TOKEN, tokenData.access_token);
-    set({ token: tokenData.access_token });
-
-    const user = await getCurrentUser();
-    set({ isLogin: true, user });
+    const session: AuthSession = await loginAPI(email, password);
+    persistTokens(session);
+    set({ isLogin: true, user: session.user, token: session.accessToken });
   },
 
   signUp: async (email, password, name) => {
-    await registerAPI({ email, password, name });
-    await get().signIn(email, password);
+    const session = await registerAPI({ email, password, name });
+
+    // With email verification enabled the backend registers the account but
+    // withholds tokens until the address is confirmed.
+    if (!session.accessToken) {
+      return { needsVerification: true };
+    }
+
+    persistTokens(session);
+    set({ isLogin: true, user: session.user, token: session.accessToken });
+    return { needsVerification: false };
   },
 
   signOut: () => {
-    storage.remove(StorageKeys.ACCESS_TOKEN);
+    // Best-effort server-side revoke; the local session is cleared regardless.
+    // Order matters: the request reads the token from storage synchronously, so
+    // it must be started before `clearTokens()`.
+    if (storage.getString(StorageKeys.ACCESS_TOKEN)) {
+      void logoutAPI().catch(() => {});
+    }
+    clearTokens();
     set({ isLogin: false, user: null, token: null });
   },
 

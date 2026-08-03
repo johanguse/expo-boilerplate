@@ -22,6 +22,7 @@ module.exports = {
           moduleResolution: "node",
           esModuleInterop: true,
           strict: true,
+          types: ["jest", "node"],
           paths: {
             "@config/*": ["./src/config/*"],
             "@lib/*": ["./src/lib/*"],
