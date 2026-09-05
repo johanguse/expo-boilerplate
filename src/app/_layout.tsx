@@ -7,6 +7,7 @@ import { useOnboarding } from "@contexts/onboarding-context";
 import { initFirebase } from "@lib/firebase";
 import { ReactQueryProvider } from "@lib/react-query";
 import useAuthManage from "@stores/auth.zustand";
+import { Observe, ObserveRoot, useObserve } from "expo-observe";
 import { Redirect, Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -18,6 +19,11 @@ import {
 } from "react-native-reanimated";
 
 initFirebase();
+
+// Must run at module scope, before any screen mounts.
+Observe.configure({
+  integrations: { "expo-router": true },
+});
 
 export const unstable_settings = {
   anchor: "(drawer)",
@@ -39,10 +45,17 @@ function AppLayout() {
   const initialize = useAuthManage((state) => state.initialize);
   const { onboardingDone } = useOnboarding();
   const pathname = usePathname();
+  const { markInteractive } = useObserve();
 
   useEffect(() => {
     initialize();
   }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      markInteractive();
+    }
+  }, [isLoading, markInteractive]);
 
   // Show loading while checking auth token
   if (isLoading) {
@@ -84,7 +97,7 @@ function AppLayout() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   return (
     <ReactQueryProvider>
       <AppProvider>
@@ -93,3 +106,5 @@ export default function RootLayout() {
     </ReactQueryProvider>
   );
 }
+
+export default ObserveRoot.wrap(RootLayout);
